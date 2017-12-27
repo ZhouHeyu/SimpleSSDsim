@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "flash.h"
-#include "ssd_interface.h"
+#include "global.h"
 
 int merge_switch_num = 0;
 int merge_partial_num = 0;
@@ -860,9 +860,9 @@ void lm_end()
     free(BMT);
     free(PMT);
   }
-  if(CacheHead!=NULL){
-	FreeList(CacheHead);
-  }
+//  if(CacheHead!=NULL){
+//	FreeList(CacheHead);
+//  }
 }
 
 /********************* INIT **********************************/ 

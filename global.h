@@ -67,7 +67,7 @@ FILE   *outputfile;
 
 //关于底层的配置参数
 int flash_numblocks;
-int flash_extrablocks;
+int flash_extrblocks;
 int cache_type;
 int ftl_type;
 //扇区划分
@@ -77,6 +77,8 @@ int total_extra_sect_num;
 //块划分
 int total_extr_blk_num;
 int total_init_blk_num;
+
+int global_total_blk_num;
 
 
 //关于nand底层的宏定义
@@ -116,6 +118,10 @@ int map_flash_erase_num;
 int map_flash_oob_read_num;
 int map_flash_oob_write_num;
 
+//涉及到混合FTL操作的交换合并，全合并，部分合并的统计变量
+extern int merge_switch_num;
+extern int merge_partial_num;
+extern int merge_full_num;
 
 int write_count;
 int read_count;

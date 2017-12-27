@@ -1,4 +1,3 @@
-#include "global.h"
 #include "SSDsim.h"
 
 
@@ -10,9 +9,9 @@ int main(int argc ,char **argv)
 
     //初始化相应的FTL,flash配置
     if(ftl_type!=-1){
-//        initFlash();
-//        reset_flash_stat();
-//        nand_stat_reset();
+         initFlash();
+         reset_flash_stat();
+         nand_stat_reset();
     }
 
     //预热，使nand数组存在相应的数据

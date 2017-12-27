@@ -5,4 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_executable(simulation
         main.c
-        type.h global.h SSDsim.c SSDsim.h)
+        flash.c
+        flash.h
+        fast.c
+        fast.h
+        type.h global.h SSDsim.c SSDsim.h Interface.c Interface.h)

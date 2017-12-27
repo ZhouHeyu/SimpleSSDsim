@@ -48,7 +48,7 @@ void SSDsim_loadparams(char *filename)
             if(strcmp(Stemp,"flash_numblocks")==0){
                 flash_numblocks=temp;
             }else if(strcmp(Stemp,"flash_extrablocks")==0){
-                flash_extrablocks=temp;
+                flash_extrblocks=temp;
             }else if(strcmp(Stemp,"cache_type")==0){
                 cache_type=temp;
             }else if(strcmp(Stemp,"ftl_type")==0){
@@ -115,7 +115,7 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
     SSDsim_loadparams( argv[1]);
     fprintf(outputfile,"flash_numblocks= %d\n",flash_numblocks);
     fflush(outputfile);
-    fprintf(outputfile,"flash_extrablocks= %d\n",flash_extrablocks);
+    fprintf(outputfile,"flash_extrablocks= %d\n",flash_extrblocks);
     fflush(outputfile);
     fprintf(outputfile,"cache_type= %d\n",cache_type);
     fflush(outputfile);
@@ -136,7 +136,10 @@ void SSDsim_cleanup_and_printstats()
     fprintf(outputfile,"simulation complete\n");
     fflush(outputfile);
 
-    //输出相应的统计结果
+    //输出相应缓冲区的命中统计结果
+
+    //flashsim: close and exit flash simulator
+    endFlash();
 
 
     //关闭输出文件
@@ -159,6 +162,7 @@ void SSDsim_cleanup_and_printstats()
 
 void SSDsim_run_simulation()
 {
+    double delay=0.0;
     ioreq=(ioreq_event *)malloc(sizeof(ioreq_event));
     if(ioreq==NULL){
         fprintf(stderr,"malloc for ioreq is failed\n");
@@ -175,6 +179,9 @@ void SSDsim_run_simulation()
         }
         //倒入自己的缓冲区代码段
         //test sentence
-        fprintf(stdout,"%d %d %d\n",ioreq->blkno,ioreq->bcount,ioreq->operation);
+//        fprintf(stdout,"%d %d %d\n",ioreq->blkno,ioreq->bcount,ioreq->operation);
+        delay=callFsim(ioreq->blkno,ioreq->bcount,ioreq->operation);
+        SSDsim->simtime+=delay;
+        fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
     }
 }
