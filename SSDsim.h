@@ -17,4 +17,5 @@ void SSDsim_setup_outputfile(char *filename,char *mode);
 void SSDsim_setup_SSDsim(int argc,char ** argv);
 void SSDsim_cleanup_and_printstats();
 void SSDsim_run_simulation();
+void warmFlash(char *filename);
 #endif //SIMULATION_SSDSIM_H

@@ -185,3 +185,40 @@ void SSDsim_run_simulation()
         fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
     }
 }
+
+//预热函数
+void warmFlash(char *filename)
+{
+    FILE *fp = fopen(filename, "r");
+    if(fp==NULL){
+        fprintf(stderr,"WarmFlash is failed | TraceFile %s cannot open read access \n",filename);
+        exit(1);
+    }
+    char buffer[80];
+    double time;
+    int devno, bcount, flags;
+    long int blkno;
+    double delay;
+    int i;
+
+    while(fgets(buffer, sizeof(buffer), fp)){
+        sscanf(buffer, "%lf %d %d %d %d\n", &time, &devno, &blkno, &bcount, &flags);
+
+        bcount = ((blkno + bcount -1) / 4 - (blkno)/4 + 1) * 4;
+        blkno /= 4;
+        blkno *= 4;
+
+        delay = callFsim(blkno, bcount, 0);
+
+        //for(i = blkno; i<(blkno+bcount); i++){ dm_table[i] = DEV_FLASH; }
+    }
+    nand_stat_reset();
+
+//    if(ftl_type == 3) opagemap_reset();
+//
+//    else if(ftl_type == 4) {
+//        write_count = 0; read_count = 0; }
+
+    fclose(fp);
+
+}
