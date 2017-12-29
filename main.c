@@ -21,7 +21,7 @@ int main(int argc ,char **argv)
     }
 
     //预热，使nand数组存在相应的数据
-//    warmFlash(argv[3]);
+     warmFlash(argv[3]);
 
 //    开始仿真运行
      SSDsim_run_simulation();
