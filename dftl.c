@@ -15,8 +15,7 @@
 
 #include "flash.h"
 #include "dftl.h"
-#include "ssd_interface.h"
-#include "disksim_global.h"
+#include "global.h"
 
 _u32 opm_gc_cost_benefit();
 
@@ -374,9 +373,9 @@ void opm_end()
     free(mapdir);
   }
    opagemap_num = 0;
-  if(Head!=NULL){
-	FreeList(&Head);
-	}
+//  if(Head!=NULL){
+//	FreeList(&Head);
+//	}
 
 }
 

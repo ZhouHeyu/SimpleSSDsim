@@ -11,7 +11,7 @@ int old_merge_full_num= 0;
 int old_flash_gc_read_num = 0;
 int old_flash_erase_num = 0;
 int req_count_num = 1;
-int cache_hit, rqst_cnt;
+int rqst_cnt;
 int flag1 = 1;
 int count = 0;
 

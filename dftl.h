@@ -17,6 +17,7 @@
 #define CACHE_INVALID 0
 #define CACHE_VALID 1
 
+int cache_hit;
 int flash_hit;
 int disk_hit;
 int read_cache_hit;
