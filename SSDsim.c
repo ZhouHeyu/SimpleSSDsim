@@ -197,8 +197,8 @@ void warmFlash(char *filename)
     char buffer[80];
     double time;
     int devno, bcount, flags;
-    long int blkno;
-    double delay;
+    int blkno;
+    double delay=0.0;
     int i;
 
     while(fgets(buffer, sizeof(buffer), fp)){

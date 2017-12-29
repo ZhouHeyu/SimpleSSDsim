@@ -6,3 +6,10 @@ cache_type= 1
 ftl_type= 4
 *** I/O trace used: ../synx
 Initialization complete
+simulation complete
+
+FLASH STATISTICS
+------------------------------------------------------------
+ Page read (#):    43363    Page write (#):   132070    Block erase (#):    39436
+ GC page read (#):   586563    GC page write (#):   586563
+------------------------------------------------------------
