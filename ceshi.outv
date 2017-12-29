@@ -1,6 +1,8 @@
 
-*** Output file name: ceshi.outv
-flash_numblocks= 8429
-flash_extrablocks= 34
+*** Output file name: ../ceshi.outv
+flash_numblocks= 2097152
+flash_extrablocks= 65536
 cache_type= 1
-ftl_type= 2
+ftl_type= 4
+*** I/O trace used: ../synx
+Initialization complete

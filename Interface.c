@@ -250,7 +250,7 @@ double callFsim(unsigned int secno, int scount, int operation)
 
 
     cnt = bcount;
-
+    reset_flash_stat();
 
     switch(operation)
     {

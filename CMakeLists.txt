@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9)
 project(simulation)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_FLAGS "-m32")
+set(CMAKE_SHARED_LINKER_FLAG "-m32")
 
 add_executable(simulation
         main.c
