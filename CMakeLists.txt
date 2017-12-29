@@ -8,6 +8,8 @@ set(CMAKE_SHARED_LINKER_FLAG "-m32")
 add_executable(simulation
         main.c
         flash.c
+        dftl.c
+        dftl.h
         flash.h
         fast.c
         fast.h

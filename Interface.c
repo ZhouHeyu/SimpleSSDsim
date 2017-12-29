@@ -24,7 +24,7 @@ int page_num_for_2nd_map_table;
 #define CACHE_MAX_ENTRIES 300
 int ghost_arr[MAP_GHOST_MAX_ENTRIES];
 int real_arr[MAP_REAL_MAX_ENTRIES];
-
+int cache_arr[CACHE_MAX_ENTRIES];
 /***********************************************************************
   Variables for statistics
  ***********************************************************************/
@@ -236,6 +236,102 @@ void send_flash_request(int start_blk_no, int block_cnt, int operation, int mapd
 }
 
 
+
+void find_real_max()
+{
+    int i;
+
+    for(i=0;i < MAP_REAL_MAX_ENTRIES; i++) {
+        if(opagemap[real_arr[i]].map_age > opagemap[real_max].map_age) {
+            real_max = real_arr[i];
+        }
+    }
+}
+
+void find_real_min()
+{
+
+    int i,index;
+    int temp = 99999999;
+
+    for(i=0; i < MAP_REAL_MAX_ENTRIES; i++) {
+        if(opagemap[real_arr[i]].map_age <= temp) {
+            real_min = real_arr[i];
+            temp = opagemap[real_arr[i]].map_age;
+            index = i;
+        }
+    }
+}
+
+int find_min_ghost_entry()
+{
+    int i;
+
+    int ghost_min = 0;
+    int temp = 99999999;
+
+    for(i=0; i < MAP_GHOST_MAX_ENTRIES; i++) {
+        if( opagemap[ghost_arr[i]].map_age <= temp) {
+            ghost_min = ghost_arr[i];
+            temp = opagemap[ghost_arr[i]].map_age;
+        }
+    }
+    return ghost_min;
+}
+
+
+void init_arr()
+{
+
+    int i;
+    for( i = 0; i < MAP_REAL_MAX_ENTRIES; i++) {
+        real_arr[i] = -1;
+    }
+    for( i = 0; i < MAP_GHOST_MAX_ENTRIES; i++) {
+        ghost_arr[i] = -1;
+    }
+    for( i = 0; i < CACHE_MAX_ENTRIES; i++) {
+        cache_arr[i] = -1;
+    }
+
+}
+
+int search_table(int *arr, int size, int val)
+{
+    int i;
+    for(i =0 ; i < size; i++) {
+        if(arr[i] == val) {
+            return i;
+        }
+    }
+
+    printf("shouldnt come here for search_table()=%d,%d",val,size);
+    for( i = 0; i < size; i++) {
+        if(arr[i] != -1) {
+            printf("arr[%d]=%d ",i,arr[i]);
+        }
+    }
+    exit(1);
+    return -1;
+}
+
+
+//针对arr数组中存放-1标识为无效数据
+int find_free_pos( int *arr, int size)
+{
+    int i;
+    for(i = 0 ; i < size; i++) {
+        if(arr[i] == -1) {
+            return i;
+        }
+    }
+    printf("shouldnt come here for find_free_pos()");
+    exit(1);
+    return -1;
+}
+
+
+
 double callFsim(unsigned int secno, int scount, int operation)
 {
     double delay;
@@ -245,7 +341,6 @@ double callFsim(unsigned int secno, int scount, int operation)
 
 
     blkno = secno / 4;
-    blkno += page_num_for_2nd_map_table;
     bcount = (secno + scount -1)/4 - (secno)/4 + 1;
 
 

@@ -8,7 +8,7 @@ int main(int argc ,char **argv)
 
 
     //    test debug
-    printf(">>>>>>>>>>>>>>>>>> %d",sizeof(sect_t));
+    //printf(">>>>>>>>>>>>>>>>>> %d",sizeof(sect_t));
 	//根据输入的参数，处理仿真的环境
     SSDsim=SSDsim_initialize_SSDsim_structre();
     SSDsim_setup_SSDsim(argc,argv);
