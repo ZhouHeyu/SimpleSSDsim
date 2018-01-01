@@ -4,9 +4,6 @@
 int main(int argc ,char **argv)
 {
 
-
-
-
     //    test debug
     //printf(">>>>>>>>>>>>>>>>>> %d",sizeof(sect_t));
 	//根据输入的参数，处理仿真的环境
