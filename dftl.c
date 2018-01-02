@@ -136,7 +136,7 @@ int opm_gc_run(int small, int mapdir_flag)
   }
  
   small = -1;
-
+//根本就没有用到输入的参量small
   for( q = 0; q < PAGE_NUM_PER_BLK; q++){
     if(nand_blk[victim_blk_no].page_status[q] == 1){ //map block
       for( q = 0; q  < 64; q++) {
@@ -190,19 +190,19 @@ int opm_gc_run(int small, int mapdir_flag)
             free_page_no[small] += SECT_NUM_PER_PAGE;
           }
           else{
-
+//如果有效页存的是数据页，就比较复杂了，需要考虑同步更新对应CMT中的映射关系
 
             opagemap[BLK_PAGE_NO_SECT(copy_lsn[s])].ppn = BLK_PAGE_NO_SECT(SECTOR(free_blk_no[small], free_page_no[small]));
 
             nand_page_write(SECTOR(free_blk_no[small],free_page_no[small]) & (~OFF_MASK_SECT), copy_lsn, 1, 1);
             free_page_no[small] += SECT_NUM_PER_PAGE;
-
+//如果修改的数据页的映射关系存在CMT中，则延迟更改对应的翻译页
             if((opagemap[BLK_PAGE_NO_SECT(copy_lsn[s])].map_status == MAP_REAL) || (opagemap[BLK_PAGE_NO_SECT(copy_lsn[s])].map_status == MAP_GHOST)) {
               delay_flash_update++;
             }
         
             else {
-  
+//反之则保留lsn到map_arr中 ，map_arr[PAGE_NUM_PER_BLK]
               map_arr[pos] = copy_lsn[s];
               pos++;
             } 
@@ -216,6 +216,7 @@ int opm_gc_run(int small, int mapdir_flag)
   k=0;
   for(i =0 ; i < pos; i++) {
       old_flag = 0;
+
       for( j = 0 ; j < k; j++) {
            if(temp_arr[j] == mapdir[((map_arr[i]/SECT_NUM_PER_PAGE)/MAP_ENTRIES_PER_PAGE)].ppn) {
                 if(temp_arr[j] == -1){
@@ -226,6 +227,7 @@ int opm_gc_run(int small, int mapdir_flag)
                 break;
            }
       }
+
       if( old_flag == 0 ) {
            temp_arr[k] = mapdir[((map_arr[i]/SECT_NUM_PER_PAGE)/MAP_ENTRIES_PER_PAGE)].ppn;
            temp_arr1[k] = map_arr[i];
@@ -245,7 +247,7 @@ int opm_gc_run(int small, int mapdir_flag)
             }
      
             nand_page_read(temp_arr[i]*SECT_NUM_PER_PAGE,copy,1);
-
+//将整个页的扇区进行无效置位
             for(m = 0; m<SECT_NUM_PER_PAGE; m++){
                nand_invalidate(mapdir[((temp_arr1[i]/SECT_NUM_PER_PAGE)/MAP_ENTRIES_PER_PAGE)].ppn*SECT_NUM_PER_PAGE+m, copy[m]);
               } 
@@ -314,7 +316,7 @@ size_t opm_write(sect_t lsn, sect_t size, int mapdir_flag)
     if ((free_blk_no[small] = nand_get_free_blk(0)) == -1) 
     {
       int j = 0;
-
+    //只有free_blk_num小于3才启用opm_gc_run
       while (free_blk_num < 3 ){
         j += opm_gc_run(small, mapdir_flag);
       }
