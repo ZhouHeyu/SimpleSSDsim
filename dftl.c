@@ -150,7 +150,7 @@ int opm_gc_run(int small, int mapdir_flag)
     else if(nand_blk[victim_blk_no].page_status[q] == 0){ //data block
       for( q = 0; q  < 64; q++) {
         if(nand_blk[victim_blk_no].page_status[q] == 1 ){
-          printf("something corrupted2",victim_blk_no);
+          printf("something corrupted2 %d \n",victim_blk_no);
         }
       }
       small = 1;
