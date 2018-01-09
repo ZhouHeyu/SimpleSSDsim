@@ -6,6 +6,7 @@
 #define SIMULATION_INTERFACE_H
 
 #include "global.h"
+#include "Cache.h"
 #include "dftl.h"
 
 //初始化底层的nand和FTL算法的选择
@@ -21,4 +22,6 @@ double callFsim(unsigned int secno, int scount, int operation);
 void find_real_max();
 void find_real_min();
 int find_min_ghost_entry();
+int find_free_pos( int *arr, int size);
+double CacheManage(unsigned int secno,int scount,int operation);
 #endif //SIMULATION_INTERFACE_H

@@ -70,6 +70,7 @@ int flash_numblocks;
 int flash_extrblocks;
 int cache_type;
 int ftl_type;
+int cache_size;
 //扇区划分
 int total_sect_num;
 int total_util_sect_num;
@@ -92,6 +93,9 @@ int global_total_blk_num;
 #define OOB_WRITE_DELAY   0.0
 
 struct ftl_operation * ftl_op;
+//ZhouJie
+struct cache_operation *cache_op;
+
 
 #define PAGE_READ     0
 #define PAGE_WRITE    1

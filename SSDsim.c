@@ -53,6 +53,8 @@ void SSDsim_loadparams(char *filename)
                 cache_type=temp;
             }else if(strcmp(Stemp,"ftl_type")==0){
                 ftl_type=temp;
+            } else if(strcmp(Stemp,"cache_size")==0){
+                cache_size=temp;
             }
         }
     }
@@ -117,6 +119,8 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
     fflush(outputfile);
     fprintf(outputfile,"flash_extrablocks= %d\n",flash_extrblocks);
     fflush(outputfile);
+    fprintf(outputfile,"cache_size=%d",cache_size);
+    fflush(outputfile);
     fprintf(outputfile,"cache_type= %d\n",cache_type);
     fflush(outputfile);
     fprintf(outputfile,"ftl_type= %d\n",ftl_type);
@@ -180,7 +184,8 @@ void SSDsim_run_simulation()
         //倒入自己的缓冲区代码段
         //test sentence
 //        fprintf(stdout,"%d %d %d\n",ioreq->blkno,ioreq->bcount,ioreq->operation);
-        delay=callFsim(ioreq->blkno,ioreq->bcount,ioreq->operation);
+//        delay=callFsim(ioreq->blkno,ioreq->bcount,ioreq->operation);
+        delay=CacheManage(ioreq->blkno,ioreq->bcount,ioreq->operation);
         SSDsim->simtime+=delay;
         fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
     }

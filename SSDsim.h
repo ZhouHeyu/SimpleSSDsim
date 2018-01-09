@@ -9,6 +9,7 @@
 #include "global.h"
 #include "Interface.h"
 #include "flash.h"
+#include "Cache.h"
 
 SSDsim_t * SSDsim_initialize_SSDsim_structre();
 void SSDsim_setup_iotracefile(char *filename);

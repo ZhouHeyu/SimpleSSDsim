@@ -23,4 +23,15 @@ struct ftl_operation {
   size_t (*write)(sect_t lsn, size_t size, int map_flag);
   void   (*end)  ();
 };
+
+//加入自己的cache_type类型的函数指针结构
+struct cache_operation{
+    int  (*init) (int size,int blk_num);
+    int (*SearchCache)(int LPN,int operation);
+    int (*HitCache)(int LPN, int operation);
+    double (*AddCacheEntry)(int LPN,int operation);
+    double (*DelCacheEntry)();
+    void (*end) ();
+};
+
 #endif 

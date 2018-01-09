@@ -5,6 +5,7 @@
 #include "Interface.h"
 #include "flash.h"
 #include "fast.h"
+#include "LRU.h"
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
 int old_merge_full_num= 0;
@@ -21,10 +22,8 @@ int page_num_for_2nd_map_table;
 #define MAP_REAL_MAX_ENTRIES 6552// real map table size in bytes
 #define MAP_GHOST_MAX_ENTRIES 1640// ghost_num is no of entries chk if this is ok
 
-#define CACHE_MAX_ENTRIES 300
 int ghost_arr[MAP_GHOST_MAX_ENTRIES];
 int real_arr[MAP_REAL_MAX_ENTRIES];
-int cache_arr[CACHE_MAX_ENTRIES];
 /***********************************************************************
   Variables for statistics
  ***********************************************************************/
@@ -156,19 +155,32 @@ void initFlash()
 
         default: break;
     }
+//    选择相应的缓冲区算法
+    switch(cache_type){
+//        LRU
+        case 1: cache_op=LRU_op_setup();break;
+////        CFLRU
+//        case 2: cache_op=CFLRU_op_setup();break;
+////        AD-LRU
+//        case 3: cache_op=ADLRU_op_setup();break;
+////        CASA
+//        case 4: cache_op=CASA_op_setup();break;
+    }
 
     ftl_op->init(total_util_blk_num, total_extr_blk_num);
-
+    cache_op->init(cache_size,total_util_blk_num);
     nand_stat_reset();
     //在这里可以申请分配对应的缓冲区的内存段
-
+    Buffer_Stat_Reset();
 }
 
 //初始化对应的要释放内存段
 void endFlash()
 {
+    Buffer_Stat_Print(outputfile);
     nand_stat_print(outputfile);
-    ftl_op->end;
+    ftl_op->end();
+    cache_op->end();
     nand_end();
     //这里也可以添加相应的缓冲区申请的内存段的释放
 }
@@ -290,10 +302,6 @@ void init_arr()
     for( i = 0; i < MAP_GHOST_MAX_ENTRIES; i++) {
         ghost_arr[i] = -1;
     }
-    for( i = 0; i < CACHE_MAX_ENTRIES; i++) {
-        cache_arr[i] = -1;
-    }
-
 }
 
 int search_table(int *arr, int size, int val)
@@ -377,3 +385,36 @@ double callFsim(unsigned int secno, int scount, int operation)
 
 }
 
+int ZJ_flag=0;
+
+double CacheManage(unsigned int secno,int scount,int operation)
+{
+    double delay,flash_delay=0.0,cache_delay=0.0;
+    int bcount;
+    unsigned int blkno;
+    int HitIndex;
+    int cnt=0;
+    //页对齐操作
+    blkno=secno/4;
+    bcount=(secno+scount-1)/4-(secno)/4+1;
+    //重置cache_stat相关状态
+    reset_cache_stat();
+    cnt=bcount;
+    while(cnt>0){
+        buffer_cnt++;
+        HitIndex=cache_op->SearchCache(blkno,operation);
+        if(HitIndex==-1){
+//            未命中缓冲区
+            flash_delay+=cache_op->DelCacheEntry();
+            flash_delay+=cache_op->AddCacheEntry(blkno,operation);
+        }else{
+//            命中缓冲区
+            cache_op->HitCache(blkno,operation);
+        }
+        blkno++;
+        cnt--;
+    }
+    cache_delay=calculate_delay_cache();
+    delay=cache_delay+flash_delay;
+    return delay;
+}
