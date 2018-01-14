@@ -333,8 +333,8 @@ int find_free_pos( int *arr, int size)
             return i;
         }
     }
-    printf("shouldnt come here for find_free_pos()");
-    exit(1);
+//    printf("shouldnt come here for find_free_pos()");
+//    exit(1);
     return -1;
 }
 

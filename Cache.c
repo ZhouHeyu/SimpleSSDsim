@@ -22,7 +22,7 @@ void Buffer_Stat_Reset()
 void Buffer_Stat_Print(FILE *outFP)
 {
     fprintf(outFP, "\n");
-    fprintf(outFP, "FLASH STATISTICS\n");
+    fprintf(outFP, "CACHE STATISTICS\n");
     fprintf(outFP, "------------------------------------------------------------\n");
     fprintf(outFP,"All buffer req count# %d\n",buffer_cnt);
     fprintf(outFP,"Buffer_Miss_Count # %d\t",buffer_miss_cnt);

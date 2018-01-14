@@ -2,14 +2,23 @@
 *** Output file name: ../ceshi.outv
 flash_numblocks= 2097152
 flash_extrablocks= 65536
-cache_type= 1
+cache_size=1024cache_type= 1
 ftl_type= 4
 *** I/O trace used: ../synx
 Initialization complete
 simulation complete
 
+CACHE STATISTICS
+------------------------------------------------------------
+All buffer req count# 875017
+Buffer_Miss_Count # 331697	Hit rate is 0.620925
+Read Hit count is 543032	Write Hit count is 288
+Read Miss count is 199915	Write Miss count is 131782
+Physical Read Count is 331697	Physical Write Count is 131567
+------------------------------------------------------------
+
 FLASH STATISTICS
 ------------------------------------------------------------
- Page read (#):    43363    Page write (#):   132070    Block erase (#):    39436
- GC page read (#):   586563    GC page write (#):   586563
+ Page read (#):   331697    Page write (#):   131567    Block erase (#):    40196
+ GC page read (#):   595100    GC page write (#):   595100
 ------------------------------------------------------------

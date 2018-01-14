@@ -9,34 +9,38 @@
 #include "Interface.h"
 #include "Cache.h"
 
-int my_find_cache_max(int *arr,int arrMaxSize)
+int my_find_cache_max(int *arr,int arrMaxSize,int *index)
 {
     int i;
     int temp=-1;
     int cache_max=-1;
+    *index=-1;
     for ( i = 0; i <arrMaxSize ; ++i) {
         if (arr[i]!=-1){
             if (LRUPage[arr[i]].cache_age>temp){
                 temp=LRUPage[arr[i]].cache_age;
                 cache_max=arr[i];
+                *index=i;
             }
         }
     }
     return cache_max;
 }
 
-//找到数组中索引对应的LPN的age最大或最小
-int my_find_cache_min(int *arr,int arrMaxSize)
+//找到数组中索引对应的LPN的age最大或最小,同时添加返回数组最值的索引
+int my_find_cache_min(int *arr,int arrMaxSize,int * index)
 {
     int i;
     int temp=99999999;
     int cache_min=-1;
+    *index=-1;
     for (i = 0; i <arrMaxSize ; ++i) {
         //attention arr[i]=-1 ,the NandPage[-1] is error
         if(arr[i]!=-1){
             if(LRUPage[arr[i]].cache_age<temp){
                 temp=LRUPage[arr[i]].cache_age;
                 cache_min=arr[i];
+                *index=i;
             }
         }
     }
@@ -157,6 +161,7 @@ double LRU_AddCacheEntry(int LPN,int operation)
     LRUPage[LPN].cache_age=LRUPage[LRU_max_age_index].cache_age+1;
     LRU_max_age_index=LPN;
     LRUPage[LPN].cache_status=CACHE_VALID;
+    buffer_miss_cnt++;
     if(operation==0){
 //        write
         LRUPage[LPN].cache_update=1;
@@ -184,27 +189,32 @@ double LRU_DelCacheEntry()
     double delay=0.0;
     int victim_index=-1;
     int victim_LPN=-1;
-    if(Cache_Num_Entry<=Cache_Max_Entry){
+    if(Cache_Num_Entry<Cache_Max_Entry){
         return delay;
     }
-//    选择age最小的项做剔除对象
-    LRU_min_age_index=my_find_cache_min(lru_cache_arr,Cache_Max_Entry);
-    if(LRU_min_age_index==-1){
+//    选择age最小的项做剔除对象,函数返回的是最小的age的LPN号
+    victim_LPN=my_find_cache_min(lru_cache_arr,Cache_Max_Entry,&victim_index);
+//    debug 测试是否找到对应的最小age，LPN和index是否符合
+    if(victim_LPN==-1){
         fprintf(stderr,"error happend in DelCacheEntry can not find min age(victim) in lru_cache_arr\n ");
         exit(0);
     }
-    victim_index=LRU_min_age_index;
-    victim_LPN=lru_cache_arr[victim_index];
+    if(victim_index==-1 || victim_index >=Cache_Max_Entry)
+    {
+        fprintf(stderr,"error happend in DelCacheEntry: the victim_index is error\n");
+        exit(0);
+    }
+
 //   判断选择的数据页是否为脏页
     if(LRUPage[victim_LPN].cache_update==1){
         physical_write++;
+        delay=callFsim(victim_LPN*4,4,0);
     }
-    delay=callFsim(victim_LPN*4,4,0);
 //  重置相应的LRUpage的状态位,删除对应数组中的LPN
-    lru_cache_arr[victim_index]=-1;
+    lru_cache_arr[victim_index] = -1;
     LRUPage[victim_LPN].cache_update=0;
     LRUPage[victim_LPN].cache_age=0;
-    LRUPage[victim_index].cache_status=0;
+    LRUPage[victim_LPN].cache_status=0;
     Cache_Num_Entry--;
 //   做一个长度检查：debug
     if(calculate_arr_positive_num(lru_cache_arr,Cache_Max_Entry)!=Cache_Num_Entry){
