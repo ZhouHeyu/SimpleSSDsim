@@ -103,7 +103,7 @@ pNode FindIndexNode(pNode pHead,int index)
     pNode ps=NULL,pt=pHead->Next;
 //    index是从1开始计数的
     int count=1;
-    while(count<=index)
+    while(count<index)
     {
         if(pt==pHead){
             fprintf(stderr,"error happened in FindIndexNode\n");
@@ -338,6 +338,7 @@ double CFLRU_AddCacheEntry(int LPN,int operation)
         printf("malloc for New node is error\n");
         assert(0);
     }
+    buffer_miss_cnt++;
     //根据请求初始化对应节点的参数
     if (operation==0){
         buffer_write_miss++;

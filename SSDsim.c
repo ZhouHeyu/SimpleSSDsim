@@ -134,11 +134,13 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
     fflush(outputfile);
     fprintf(outputfile,"flash_extrablocks= %d\n",flash_extrblocks);
     fflush(outputfile);
-    fprintf(outputfile,"cache_size=%d",cache_size);
+    fprintf(outputfile,"cache_size=%d\n",cache_size);
     fflush(outputfile);
     fprintf(outputfile,"cache_type= %d\n",cache_type);
     fflush(outputfile);
     fprintf(outputfile,"ftl_type= %d\n",ftl_type);
+    fflush(outputfile);
+    fprintf(outputfile,"CFLRU_alpha=%lf\n",CFLRU_alpha);
     fflush(outputfile);
     //加载仿真的负载文件
     SSDsim_setup_iotracefile(argv[3]);
