@@ -6,6 +6,7 @@
 #include "flash.h"
 #include "fast.h"
 #include "LRU.h"
+#include "CFLRU.h"
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
 int old_merge_full_num= 0;
@@ -159,8 +160,8 @@ void initFlash()
     switch(cache_type){
 //        LRU
         case 1: cache_op=LRU_op_setup();break;
-////        CFLRU
-//        case 2: cache_op=CFLRU_op_setup();break;
+//        CFLRU
+        case 2: cache_op=CFLRU_op_setup();break;
 ////        AD-LRU
 //        case 3: cache_op=ADLRU_op_setup();break;
 ////        CASA
@@ -409,7 +410,7 @@ double CacheManage(unsigned int secno,int scount,int operation)
             flash_delay+=cache_op->AddCacheEntry(blkno,operation);
         }else{
 //            命中缓冲区
-            cache_op->HitCache(blkno,operation);
+            cache_op->HitCache(blkno,operation,HitIndex);
         }
         blkno++;
         cnt--;

@@ -50,15 +50,15 @@ int my_find_cache_min(int *arr,int arrMaxSize,int * index)
 int LRU_init(int size, int DataBlk_Num)
 {
     int i;
-    Cache_Max_Entry=size;
-    Cache_Num_Entry=0;
-    lru_cache_arr=(int *)malloc(sizeof(int)*Cache_Max_Entry);
+    LRU_Cache_Max_Entry=size;
+    LRU_Cache_Num_Entry=0;
+    lru_cache_arr=(int *)malloc(sizeof(int)*LRU_Cache_Max_Entry);
     if(lru_cache_arr==NULL){
         fprintf(stderr,"malloc for lru_cache_arr failed\n");
         exit(0);
     }
     //数组初始化
-    for ( i = 0; i < Cache_Max_Entry; ++i) {
+    for ( i = 0; i < LRU_Cache_Max_Entry; ++i) {
         lru_cache_arr[i]=-1;
     }
     LRUPage_Num=DataBlk_Num*PAGE_NUM_PER_BLK;
@@ -96,7 +96,7 @@ int LRU_Search(int LPN,int operation)
         return index;
     }
 
-    for(i=0;i<Cache_Max_Entry;i++){
+    for(i=0;i<LRU_Cache_Max_Entry;i++){
         if(lru_cache_arr[i]==LPN){
             index=i;
             break;
@@ -106,13 +106,13 @@ int LRU_Search(int LPN,int operation)
 
 }
 
-int LRU_HitCache(int LPN,int operation)
+int LRU_HitCache(int LPN,int operation,int Hit_index)
 {
     //先做一个错误判断
     int i;
     int index=-1;
     //做一个命中数据页的转移，找到对应请求的位置
-    for(i=0;i<Cache_Max_Entry;i++){
+    for(i=0;i<LRU_Cache_Max_Entry;i++){
         if(lru_cache_arr[i]==LPN){
             index=i;
             break;
@@ -147,14 +147,14 @@ double LRU_AddCacheEntry(int LPN,int operation)
     //将新的请求加入到缓冲区中
     double delay=0.0;
     int free_pos=-1;
-    free_pos=find_free_pos(lru_cache_arr,Cache_Max_Entry);
+    free_pos=find_free_pos(lru_cache_arr,LRU_Cache_Max_Entry);
     //debug test
     if(free_pos==-1){
         fprintf(stderr,"error happened in AddCacheEntry:can not find free pos for LPN %d in cache-arr\n",LPN);
         exit(0);
     }
     lru_cache_arr[free_pos]=LPN;
-    Cache_Num_Entry++;
+    LRU_Cache_Num_Entry++;
     physical_read++;
     delay=callFsim(LPN*4,4,1);
 //    改变相应的标识
@@ -173,10 +173,10 @@ double LRU_AddCacheEntry(int LPN,int operation)
         cache_read_num++;
     }
 //   做一个长度检查：debug
-    if(calculate_arr_positive_num(lru_cache_arr,Cache_Max_Entry)!=Cache_Num_Entry){
+    if(calculate_arr_positive_num(lru_cache_arr,LRU_Cache_Max_Entry)!=LRU_Cache_Num_Entry){
         fprintf(stderr,"error happened in AddCacheEntry:\n");
-        fprintf(stderr,"cache-size compute exist eror: Cache_Num_Entry is %d\n",Cache_Num_Entry);
-        fprintf(stderr,"lru_cache_arr's valid varibale number is %d\n",calculate_arr_positive_num(lru_cache_arr,Cache_Max_Entry));
+        fprintf(stderr,"cache-size compute exist eror: LRU_Cache_Num_Entry is %d\n",LRU_Cache_Num_Entry);
+        fprintf(stderr,"lru_cache_arr's valid varibale number is %d\n",calculate_arr_positive_num(lru_cache_arr,LRU_Cache_Max_Entry));
         exit(0);
     }
 
@@ -189,17 +189,17 @@ double LRU_DelCacheEntry()
     double delay=0.0;
     int victim_index=-1;
     int victim_LPN=-1;
-    if(Cache_Num_Entry<Cache_Max_Entry){
+    if(LRU_Cache_Num_Entry<LRU_Cache_Max_Entry){
         return delay;
     }
 //    选择age最小的项做剔除对象,函数返回的是最小的age的LPN号
-    victim_LPN=my_find_cache_min(lru_cache_arr,Cache_Max_Entry,&victim_index);
+    victim_LPN=my_find_cache_min(lru_cache_arr,LRU_Cache_Max_Entry,&victim_index);
 //    debug 测试是否找到对应的最小age，LPN和index是否符合
     if(victim_LPN==-1){
         fprintf(stderr,"error happend in DelCacheEntry can not find min age(victim) in lru_cache_arr\n ");
         exit(0);
     }
-    if(victim_index==-1 || victim_index >=Cache_Max_Entry)
+    if(victim_index==-1 || victim_index >=LRU_Cache_Max_Entry)
     {
         fprintf(stderr,"error happend in DelCacheEntry: the victim_index is error\n");
         exit(0);
@@ -215,12 +215,12 @@ double LRU_DelCacheEntry()
     LRUPage[victim_LPN].cache_update=0;
     LRUPage[victim_LPN].cache_age=0;
     LRUPage[victim_LPN].cache_status=0;
-    Cache_Num_Entry--;
+    LRU_Cache_Num_Entry--;
 //   做一个长度检查：debug
-    if(calculate_arr_positive_num(lru_cache_arr,Cache_Max_Entry)!=Cache_Num_Entry){
+    if(calculate_arr_positive_num(lru_cache_arr,LRU_Cache_Max_Entry)!=LRU_Cache_Num_Entry){
         fprintf(stderr,"error happened in DelCacheEntry:\n");
-        fprintf(stderr,"cache-size compute exist eror: Cache_Num_Entry is %d\n",Cache_Num_Entry);
-        fprintf(stderr,"lru_cache_arr's valid varibale number is %d\n",calculate_arr_positive_num(lru_cache_arr,Cache_Max_Entry));
+        fprintf(stderr,"cache-size compute exist eror: LRU_Cache_Num_Entry is %d\n",LRU_Cache_Num_Entry);
+        fprintf(stderr,"lru_cache_arr's valid varibale number is %d\n",calculate_arr_positive_num(lru_cache_arr,LRU_Cache_Max_Entry));
         exit(0);
     }
     return delay;

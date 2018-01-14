@@ -375,8 +375,8 @@ void opm_end()
     free(mapdir);
   }
    opagemap_num = 0;
-//  if(Head!=NULL){
-//	FreeList(&Head);
+//  if(CFLRU_Head!=NULL){
+//	FreeList(&CFLRU_Head);
 //	}
 
 }

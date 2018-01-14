@@ -9,9 +9,9 @@
 struct cache_operation * CFLRU_op_setup();
 
 //缓冲区最大的大小设置
-int Cache_Max_Entry;
+int CFLRU_Cache_Max_Entry;
 //当前缓冲区的个数
-int Cache_Num_Entry;
+int CFLRU_Cache_Num_Entry;
 
 //定义节点,
 typedef struct Node
@@ -22,7 +22,7 @@ typedef struct Node
     int isD;
 }Node ,*pNode;
 //头节点
-pNode Head;
+pNode CFLRU_Head;
 //CFLRU的窗口比例alpha,w(大小)
 double alpha;
 int Window_Size;

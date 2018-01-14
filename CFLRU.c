@@ -8,33 +8,398 @@
 #include "flash.h"
 #include "Interface.h"
 
-int CFLRU_init(int size,int blk_num)
+
+/***************双链表操作函数************************/
+//创建双向链表
+pNode CreateList()
 {
+    //分配初始内存
+    pNode  pHead=(pNode)malloc(sizeof(Node));
+    if(NULL==pHead){
+        fprintf(stderr,"error happened in CFLRU/CreateList\n");
+        fprintf(stderr,"malloc for pHead failed!\n");
+        exit(-1);
+    }
+    pHead->LPN=-1;
+    pHead->isD=-1;
+    pHead->Pre=pHead;
+    pHead->Next=pHead;
+    return pHead;
+}
+
+
+//删除整个链表，释放内存（这里有点小问题)
+void FreeList(pNode *ppHead)
+{
+    pNode pt=NULL;
+    while(*ppHead!=NULL){
+        pt=(*ppHead)->Next;
+        free(*ppHead);
+        if(NULL!=pt)
+            pt->Pre=NULL;
+        *ppHead=pt;
+    }
+}
+
+
+//判断链表是否为空
+int IsEmptyList(pNode pHead)
+{
+    pNode pt=pHead->Next;
+    if(pt==pHead)
+    {
+        return 1;
+    }else
+    {
+        return 0;
+    }
+}
+
+//返回链表的长度
+int GetListLength(pNode pHead)
+{
+    int length=0;
+    pNode pt=pHead->Next;
+    while (pt !=pHead)
+    {
+        length++;
+        pt=pt->Next;
+    }
+    return length;
+}
+
+
+//向链表中删除节点
+int DeleteEleList(pNode pHead,int pos)
+{
+    pNode pt=pHead,ps=NULL;
+    //pos=0就是pHead
+    if(pos>0&&pos<GetListLength(pHead)+1){
+        while(1)
+        {
+            pos--;
+            if(pos==0)
+                break;
+            pt=pt->Next;
+        }
+        //此时的pt是pos的前一个节点
+        //ps才是要删除的节点位置
+        ps=pt->Next;
+        pt->Next=ps->Next;
+        ps->Next->Pre=pt;
+        //释放ps指向的节点
+        free(ps);
+        return 1;
+    }else{
+        printf("delete pos %d is error\n",pos);
+        return 0;
+    }
 
 }
+
+//该函数完成指定节点的指针返回
+pNode FindIndexNode(pNode pHead,int index)
+{
+    pNode ps=NULL,pt=pHead->Next;
+//    index是从1开始计数的
+    int count=1;
+    while(count<=index)
+    {
+        if(pt==pHead){
+            fprintf(stderr,"error happened in FindIndexNode\n");
+            fprintf(stderr,"index over the double-list-size\n");
+            return NULL;
+        }
+        pt=pt->Next;
+        count++;
+    }
+        return  pt;
+}
+
+
+//从链表中找到特定的LPN值，并返回节点的指针位置,如果不存在返回NULL
+pNode FindLPNinList(pNode pHead,int LPN)
+{
+    pNode ps=NULL,pt=pHead->Next;
+    int count=0;
+    while(pt!=pHead)
+    {
+        count++;
+        if(pt->LPN==LPN){
+            ps=pt;
+            break;
+        }
+        pt=pt->Next;
+    }
+    //调试输出语句遍历循环了多少次
+//    printf("the while count is %d\n",count);
+    return ps;
+}
+
+
+/**************双链表操作函数（END）*************************/
+
+//将命中的数据页移动到MRU位置,输入参数是LRU队列和命中数据页的指针
+int MoveTOLRU(pNode pHead,pNode Hit)
+{
+    pNode pt=NULL,ps=NULL;
+    //首先切断原来位置的前后链接关系
+    pt=Hit->Pre;
+    pt->Next=Hit->Next;
+    Hit->Next->Pre=pt;
+    //将命中的数据页潜入到头部
+    Hit->Pre=pHead;
+    Hit->Next=pHead->Next;
+    //链接关系
+    pHead->Next->Pre=Hit;
+    pHead->Next=Hit;
+//    //做一个错误检测
+//    if(CFLRU_Cache_Num_Entry!=GetListLength(pHead)){
+//        printf("error happend in MoveToLRU:\n");
+//        printf("CFLRU_Cache_Num_Entry is %d\t list-size is %d\t",CFLRU_Cache_Num_Entry,GetListLength(pHead));
+//        exit(0);
+//    }
+    return 0;
+}
+
+
+//该函数主要查找队列尾部的优先置换区w中是否存在干净页
+//输入参数是优先置换区的大小，输出参数是干净页在队列中的位置，不存在返回NULL
+pNode IsCLeanInWindow(pNode pHead,int w)
+{
+    int index;
+    pNode pt, ps=NULL;
+    //错误判断
+    if(CFLRU_Cache_Num_Entry!=CFLRU_Cache_Max_Entry){
+        printf("error happend in IsCLeanInWindow:\n");
+        printf("CFLRU_CACHE_SZIE is %d\t buf_size is %d\n",CFLRU_Cache_Num_Entry,CFLRU_Cache_Max_Entry);
+        assert(0);
+    }
+    //首先指向队列的尾部（LRU）
+    pt=pHead->Pre;
+    for ( index = 0; index <w ; index++) {
+        if (pt->isD==0){
+            ps=pt;
+            break;
+        }
+        pt=pt->Pre;
+    }
+    //    错误检测
+    if (CFLRU_Cache_Num_Entry!=GetListLength(pHead)){
+        printf("error happend IsCLeanInWindow :\n");
+        printf("CFLRU_Cache_Num_Entry is %d\t list-size is %d\t",CFLRU_Cache_Num_Entry,GetListLength(pHead));
+        exit(-1);
+    }
+
+    return ps;
+}
+
+
+
+//删除是制定的干净页,返回删除的LPN
+int DelCleanLPN(pNode pHead,pNode CVictim)
+{
+    pNode pt=NULL;
+    int DelLPN=-1;
+    //切断联系
+    pt=CVictim->Pre;
+    pt->Next=CVictim->Next;
+    CVictim->Next->Pre=pt;
+    DelLPN=CVictim->LPN;
+    //释放对应的节点,释放CVictim节点的内存
+    free(CVictim);
+    CFLRU_Cache_Num_Entry--;
+    //错误判读
+    if(CFLRU_Cache_Num_Entry!=GetListLength(pHead)){
+        printf("error happened in DelCleanLPN:\n");
+        printf("CFLRU_Cache_Num_Entry is %d\t list-size is %d\t",CFLRU_Cache_Num_Entry,GetListLength(pHead));
+        exit(-1);
+    }
+    return DelLPN;
+}
+
+//删除链表的尾部的数据，返回的是删除节点包含的LPN号
+int DelLRUList(pNode pHead)
+{
+    int DelLPN=-1;
+    pNode pt=pHead->Pre;
+    if(pt==pHead){
+        printf("error happend in DelLRUList\n");
+        printf("List is empty！！\n");
+        exit(-1);
+    }
+    //将尾部衔接
+    pt->Pre->Next=pHead;
+    pHead->Pre=pt->Pre;
+    //
+    DelLPN=pt->LPN;
+    if(DelLPN==-1){
+        printf("error happend in DelLRUList:\n");
+        printf("DelLPN == -1\n");
+        exit(-1);
+    }
+    //释放删除点pt的内存
+    free(pt);
+    CFLRU_Cache_Num_Entry--;
+//    错误检测
+    if (CFLRU_Cache_Num_Entry!=GetListLength(pHead)){
+        printf("error happend in DelLRUList:\n");
+        printf("CFLRU_CACHE_SIZE is %d\t list-size is %d\t",CFLRU_Cache_Num_Entry,GetListLength(pHead));
+        exit(-1);
+    }
+
+    return DelLPN;
+}
+
+
+/***********外部接口函数**************************/
+
+
+//该函数完成对双链表的创建，窗口大小的设置，最大缓冲区配置
+int CFLRU_init(int size,int blk_num)
+{
+    CFLRU_Cache_Max_Entry=size;
+    CFLRU_Cache_Num_Entry=0;
+    //如果配置文件中没有输入对应的比例大小，则设置alpha为1/2;在主函数里面设置
+    Window_Size=(int)(CFLRU_Cache_Max_Entry*CFLRU_alpha+0.5);
+    //创建对应的头结点
+    CFLRU_Head=CreateList();
+    //针对输入的参数blk_num不加操作
+    return 0;
+}
+
 
 void CFLRU_end()
 {
+    //释放双链表的空间
+    FreeList(&CFLRU_Head);
+}
+
+//函数返回命中LPN在链表中的位置index,如果没有命中则返回-1
+int CFLRU_Search(int LPN,int operation)
+{
+    int index=-1;
+    pNode pt=CFLRU_Head->Next;
+    int count=0;
+    //索引从1开始
+    while(pt!=CFLRU_Head){
+        count++;
+        if(pt->LPN==LPN){
+            index=count;
+            break;
+        }
+        pt=pt->Next;
+    }
+
+    return index;
+}
+
+
+//输入参数包括请求命中的LPN号，操作类型和命中的位置（在双链表中按顺序排列的位置）
+int CFLRU_HitCache(int LPN,int operation ,int index)
+{
+    pNode HitNode=NULL;
+    HitNode=FindIndexNode(CFLRU_Head,index);
+    if(HitNode==NULL){
+        fprintf(stderr,"error happened in CFLRU_Hit:\n");
+        fprintf(stderr,"HitNode is NULL!!\n");
+        assert(0);
+    }
+//    debug
+    if(HitNode->LPN!=LPN){
+        fprintf(stderr,"error happened in CFLRU_Hit:\n");
+        fprintf(stderr,"HitNode->LPN is %d\t req-LPN is %d\n",HitNode->LPN,LPN);
+        assert(0);
+    }
+//   统计命中的操作
+    buffer_hit_cnt++;
+    if(operation==0){
+        HitNode->isD=0;
+        buffer_write_hit++;
+        cache_write_num++;
+    }else{
+        buffer_read_hit++;
+        cache_read_num++;
+    }
+//   将命中的移动到MRU位置
+    MoveTOLRU(CFLRU_Head,HitNode);
+
+    return 0;
 
 }
 
-int CFLRU_Search()
+double CFLRU_AddCacheEntry(int LPN,int operation)
 {
-
-}
-
-int CFLRU_HitCache()
-{
-
-}
-
-double CFLRU_AddCacheEntry()
-{
-
+    double delay=0.0;
+    pNode p_new=NULL;
+    p_new=(struct Node*)malloc(sizeof(struct Node));
+    if(p_new==NULL){
+        printf("error happened in CFLRU_AddCacheEntry:\n");
+        printf("malloc for New node is error\n");
+        assert(0);
+    }
+    //根据请求初始化对应节点的参数
+    if (operation==0){
+        buffer_write_miss++;
+        cache_write_num++;
+        p_new->isD=1;
+    } else{
+        buffer_read_miss++;
+        cache_read_num++;
+        p_new->isD=0;
+    }
+    p_new->LPN=LPN;
+    //插入头部
+    p_new->Next=CFLRU_Head->Next;
+    p_new->Pre=CFLRU_Head;
+    //链接
+    CFLRU_Head->Next->Pre=p_new;
+    CFLRU_Head->Next=p_new;
+//    增加相应链表的长度
+    CFLRU_Cache_Num_Entry++;
+    delay+=callFsim(LPN*4,4,1);
+    physical_read++;
+//错误判断
+    if(CFLRU_Cache_Num_Entry!=GetListLength(CFLRU_Head)){
+        printf("error happened in CFLRU_AddCacheEntry:\n");
+        printf("CFLRU_Cache_Num_Entry is %d\t list-size is %d\t",CFLRU_Cache_Num_Entry,GetListLength(CFLRU_Head));
+        exit(-1);
+    }
+    return delay;
 }
 
 double CFLRU_DelCacheEntry()
 {
+    double delay=0.0;
+    int DelLPN=-1;
+    pNode pC=NULL;
+//    如果缓冲区没有满,没有必要进行删除操作
+    if(CFLRU_Cache_Num_Entry<CFLRU_Cache_Max_Entry){
+        return delay;
+    }
+
+//    首先查看w窗口内是否存在想要的干净页替换
+    pC=IsCLeanInWindow(CFLRU_Head,Window_Size);
+    if(pC!=NULL){
+        //表示存在可以置换的干净页,不需要回写操作
+        DelLPN=DelCleanLPN(CFLRU_Head,pC);
+        //错误判断
+        if(DelLPN==-1){
+            printf("error happend in CFLRU_DelCacheEntry:\n");
+            printf("DelClean LPN is -1!!!\n");
+//            exit(-1);
+            assert(0);
+        }
+    }else{
+        //表示不存在可以置换的干净页，选择尾部的脏页进行回写
+        DelLPN=DelLRUList(CFLRU_Head);
+//        之后调用callFsim函数
+        physical_write++;
+        delay+=callFsim(DelLPN*4,4,0);
+//        delay+=FLASH_WRITE_DELAY;
+    }
+    return delay;
+
 
 }
 

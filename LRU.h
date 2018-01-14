@@ -20,9 +20,9 @@ int LRU_min_age_index;
 int LRU_max_age_index;
 
 //缓冲区最大的大小设置
-int Cache_Max_Entry;
+int LRU_Cache_Max_Entry;
 //当前缓冲区的个数
-int Cache_Num_Entry;
+int LRU_Cache_Num_Entry;
 //下面表示存储LPN的数组
 int *lru_cache_arr;
 

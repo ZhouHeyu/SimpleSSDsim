@@ -28,7 +28,7 @@ struct ftl_operation {
 struct cache_operation{
     int  (*init) (int size,int blk_num);
     int (*SearchCache)(int LPN,int operation);
-    int (*HitCache)(int LPN, int operation);
+    int (*HitCache)(int LPN, int operation,int index);
     double (*AddCacheEntry)(int LPN,int operation);
     double (*DelCacheEntry)();
     void (*end) ();

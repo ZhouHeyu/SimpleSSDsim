@@ -71,6 +71,11 @@ int flash_extrblocks;
 int cache_type;
 int ftl_type;
 int cache_size;
+//关于CFLRU的参数配置
+double CFLRU_alpha;
+
+//...............这里可以扩展添加之后的参数
+
 //扇区划分
 int total_sect_num;
 int total_util_sect_num;
