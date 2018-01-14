@@ -21,12 +21,23 @@ SSDsim_t * SSDsim_initialize_SSDsim_structre()
 
 }
 
+void InitGlobalVariable()
+{
+//默认情况下的我们设置的flash的大小为1G,采用FAST算法
+    flash_numblocks=2097152;
+    flash_extrblocks=65536;
+    cache_type=1;
+    cache_size=1024;
+    ftl_type=4;
+    CFLRU_alpha=0.5;
+}
+
 void SSDsim_loadparams(char *filename)
 {
     FILE   *parasfile;
     char line[201];
     char Stemp[200];
-    int temp;
+    double temp;
 
 
     if(strcmp(filename,"stdin")==0){
@@ -39,22 +50,26 @@ void SSDsim_loadparams(char *filename)
     }
 
     //一次按行读入，找到对应的匹配项，给对应的全局变量赋值
+    //首先初始化默认参数
+    InitGlobalVariable();
 
     while(fgets(line, 200,parasfile)!=NULL){
-        if(2 != sscanf(line, "%s %d\n", Stemp, &temp)){
+        if(2 != sscanf(line, "%s %lf\n", Stemp, &temp)){
             fprintf(stderr,"Wrong happend in %s ,format is error\n",filename);
             exit(1);
         }else{
             if(strcmp(Stemp,"flash_numblocks")==0){
-                flash_numblocks=temp;
+                flash_numblocks=(int)temp;
             }else if(strcmp(Stemp,"flash_extrablocks")==0){
-                flash_extrblocks=temp;
+                flash_extrblocks=(int)temp;
             }else if(strcmp(Stemp,"cache_type")==0){
-                cache_type=temp;
+                cache_type=(int)temp;
             }else if(strcmp(Stemp,"ftl_type")==0){
-                ftl_type=temp;
+                ftl_type=(int)temp;
             } else if(strcmp(Stemp,"cache_size")==0){
-                cache_size=temp;
+                cache_size=(int)temp;
+            } else if(strcmp(Stemp,"CFLRU_alpha")==0){
+                CFLRU_alpha=temp;
             }
         }
     }
