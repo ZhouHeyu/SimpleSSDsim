@@ -108,7 +108,7 @@ int LRU_Search(int LPN,int operation)
 
 int LRU_HitCache(int LPN,int operation,int Hit_kindex)
 {
-    //先做一个错误判断k
+    //先做一个错误判断kk
     int i;
     int index=-1;
     //做一个命中数据页的转移，找到对应请求的位置
