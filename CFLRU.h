@@ -13,15 +13,6 @@ int CFLRU_Cache_Max_Entry;
 //当前缓冲区的个数
 int CFLRU_Cache_Num_Entry;
 
-//定义节点,
-typedef struct Node
-{
-    int LPN;
-    struct Node *Pre;
-    struct Node *Next;
-    int isD;
-}Node ,*pNode;
-//头节点
 pNode CFLRU_Head;
 //CFLRU的窗口比例alpha,w(大小)
 double alpha;

@@ -13,4 +13,4 @@ add_executable(simulation
         flash.h
         fast.c
         fast.h
-        type.h global.h SSDsim.c SSDsim.h Interface.c Interface.h Cache.c Cache.h LRU.c LRU.h  CFLRU.h CFLRU.c )
+        type.h global.h SSDsim.c SSDsim.h Interface.c Interface.h Cache.c Cache.h LRU.c LRU.h  CFLRU.h CFLRU.c CASA.c CASA.h)

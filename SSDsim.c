@@ -30,6 +30,7 @@ void InitGlobalVariable()
     cache_size=1024;
     ftl_type=4;
     CFLRU_alpha=0.5;
+    CASA_Tau_Ratio=0.5;
 }
 
 void SSDsim_loadparams(char *filename)
@@ -69,7 +70,15 @@ void SSDsim_loadparams(char *filename)
             } else if(strcmp(Stemp,"cache_size")==0){
                 cache_size=(int)temp;
             } else if(strcmp(Stemp,"CFLRU_alpha")==0){
-                CFLRU_alpha=temp;
+//               确保输入的值在合理的区间
+                if(0<temp&&temp<1) {
+                    CFLRU_alpha = temp;
+                }
+            } else if(strcmp(Stemp,"CASA_Tau_Ratio")==0){
+//                确保输入的值在合理的区间
+                if(0<temp&&temp<1) {
+                    CASA_Tau_Ratio = temp;
+                }
             }
         }
     }

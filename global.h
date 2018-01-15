@@ -73,6 +73,9 @@ int ftl_type;
 int cache_size;
 //关于CFLRU的参数配置
 double CFLRU_alpha;
+//关于初始化CASA的Tau值比例,默认是0.5
+double CASA_Tau_Ratio;
+
 
 //...............这里可以扩展添加之后的参数
 
