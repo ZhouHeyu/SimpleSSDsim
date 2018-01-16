@@ -6,6 +6,7 @@
 #ifndef SIMULATION_CFLRU_H
 #define SIMULATION_CFLRU_H
 #include "type.h"
+#include "List.h"
 struct cache_operation * CFLRU_op_setup();
 
 //缓冲区最大的大小设置

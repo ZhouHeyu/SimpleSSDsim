@@ -34,14 +34,6 @@ struct cache_operation{
     void (*end) ();
 };
 
-//定义节点,双链表需要复用的节点定义
-typedef struct Node
-{
-    int LPN;
-    struct Node *Pre;
-    struct Node *Next;
-    int isD;
-}Node ,*pNode;
-//头节点
+
 
 #endif 

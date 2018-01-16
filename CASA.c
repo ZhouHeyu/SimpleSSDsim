@@ -5,89 +5,10 @@
 #include "CASA.h"
 #include <stdlib.h>
 #include "global.h"
+#include "List.h"
 #include "flash.h"
 #include "Interface.h"
 
-//创建双向链表
-pNode CreateList()
-{
-    //分配初始内存
-    pNode  pHead=(pNode)malloc(sizeof(Node));
-    if(NULL==pHead){
-        fprintf(stderr,"error happened in CASA/CreateList\n");
-        fprintf(stderr,"malloc for pHead failed!\n");
-        exit(-1);
-    }
-    pHead->LPN=-1;
-    pHead->isD=-1;
-    pHead->Pre=pHead;
-    pHead->Next=pHead;
-    return pHead;
-}
-
-
-//删除整个链表，释放内存（这里有点小问题)
-void FreeList(pNode *ppHead)
-{
-    pNode pt=NULL;
-    while(*ppHead!=NULL){
-        pt=(*ppHead)->Next;
-        free(*ppHead);
-        if(NULL!=pt)
-            pt->Pre=NULL;
-        *ppHead=pt;
-    }
-}
-
-
-//判断链表是否为空
-int IsEmptyList(pNode pHead)
-{
-    pNode pt=pHead->Next;
-    if(pt==pHead)
-    {
-        return 1;
-    }else
-    {
-        return 0;
-    }
-}
-
-//返回链表的长度
-int GetListLength(pNode pHead)
-{
-    int length=0;
-    pNode pt=pHead->Next;
-    while (pt !=pHead)
-    {
-        length++;
-        pt=pt->Next;
-    }
-    return length;
-}
-
-//从链表中找到特定的LPN值，并返回节点的指针位置,如果不存在返回NULL
-pNode FindLPNinList(pNode pHead,int LPN)
-{
-    pNode ps=NULL,pt=pHead->Next;
-    int count=0;
-    while(pt!=pHead)
-    {
-        count++;
-        if(pt->LPN==LPN){
-            ps=pt;
-            break;
-        }
-        pt=pt->Next;
-    }
-    //调试输出语句遍历循环了多少次
-//    printf("the while count is %d\n",count);
-    return ps;
-}
-
-
-
-/***********************链表操作(end)******************************************/
 
 //如果命中的是CLRU队列增大Tau,反之减少Tau
 int AdjustCASATau(int HitType)
@@ -237,6 +158,8 @@ int CASA_HitCache(int LPN,int operation,int HitIndex)
     }
 
 }
+
+
 
 //未命中加载新的数据到缓冲区的操作,函数最后加载数据的时延delay
 double  CASA_AddCacheEntry(int LPN,int operation)
