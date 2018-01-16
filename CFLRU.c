@@ -168,7 +168,7 @@ int CFLRU_HitCache(int LPN,int operation ,int index)
         cache_read_num++;
     }
 //   将命中的移动到MRU位置
-    MoveTOLRU(CFLRU_Head,HitNode);
+    MoveToMRU(CFLRU_Head,HitNode);
 
     return 0;
 

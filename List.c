@@ -3,8 +3,7 @@
 //
 
 #include "List.h"
-#include <stdio.h>
-#include <stdlib.h>
+
 
 //创建双向链表
 pNode CreateList()
@@ -133,7 +132,7 @@ pNode FindIndexNode(pNode pHead,int index)
 
 
 //将命中的数据页移动到MRU位置,输入参数是LRU队列和命中数据页的指针
-int MoveTOLRU(pNode pHead,pNode Hit)
+int MoveToMRU(pNode pHead,pNode Hit)
 {
     pNode pt=NULL,ps=NULL;
     //首先切断原来位置的前后链接关系
@@ -147,5 +146,44 @@ int MoveTOLRU(pNode pHead,pNode Hit)
     pHead->Next->Pre=Hit;
     pHead->Next=Hit;
 
+    return 0;
+}
+
+
+//这个函数返回的是删除页的状态（是否为脏页），关于删除的页编号通过传值参数DelLPN改变
+int DeleteLRU(pNode pHead,int *DelLPN)
+{
+//    删除指定队列的LRU位置的
+    int D_flag;
+    pNode pVictim=NULL,Ps;
+    pVictim=pHead->Pre;
+//    错误测试
+    if(pVictim==pHead || pVictim==NULL){
+        fprintf(stderr,"error happened in DeleteLRU:\n");
+        fprintf(stderr,"List Maybe Empty,can not Delte Node\n");
+        assert(0);
+    }
+//  删除尾部的节点，注意再函数调用结束修改对应的长度
+    * DelLPN=pVictim->LPN;
+    D_flag=pVictim->isD;
+//  删除节点
+    Ps=pVictim->Pre;
+    Ps->Next=pHead;
+    pHead->Pre=Ps;
+    free(pVictim);
+    return D_flag;
+}
+
+
+//将一个全新的节点添加到队列的MRU位置
+int AddNewToMRU(pNode pHead,pNode New)
+{
+//        需要注意的是新添加的节点的前后节点都没有关联任何位置节点
+//    Insert
+    New->Pre=pHead;
+    New->Next=pHead->Next;
+//    link
+    pHead->Next->Pre=New;
+    pHead->Next=New;
     return 0;
 }

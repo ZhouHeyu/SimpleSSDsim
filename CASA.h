@@ -5,12 +5,13 @@
 #ifndef SIMULATION_CASA_H
 #define SIMULATION_CASA_H
 #include "type.h"
+#include "List.h"
 struct cache_operation * CASA_op_setup();
 
 //对应各个链表的长度,全局变量的cache_size在global.h中定义
 int CLRU_CACHE_SIZE;
 int DLRU_CACHE_SIZE;
-int CASA_CACHE_SIZE;
+int CASA_CACHE_Max_SIZE;
 
 //各自链表的头结点
 pNode CLRU_Head;

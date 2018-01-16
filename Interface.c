@@ -7,6 +7,8 @@
 #include "fast.h"
 #include "LRU.h"
 #include "CFLRU.h"
+#include "CASA.h"
+
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
 int old_merge_full_num= 0;
@@ -164,8 +166,8 @@ void initFlash()
         case 2: cache_op=CFLRU_op_setup();break;
 ////        AD-LRU
 //        case 3: cache_op=ADLRU_op_setup();break;
-////        CASA
-//        case 4: cache_op=CASA_op_setup();break;
+//        CASA
+        case 4: cache_op=CASA_op_setup();break;
 //           LRU-WSR
 //        case 5: cache_op=LRUWSR_op_setup();break;
 //            之后块级的BPLRU算法
