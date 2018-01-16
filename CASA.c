@@ -80,7 +80,7 @@ void CASA_end()
     FreeList(&DLRU_Head);
 }
 
-//变量缓冲区,返回索引的结果,返回-1未命中,1命中的CLRU,2命中的是DLRU
+//变量缓冲区,返回索引的结果,返回-1未命中,0命中的CLRU,1命中的是DLRU
 int CASA_Search(int LPN,int operation)
 {
     int index=-1;
@@ -90,11 +90,11 @@ int CASA_Search(int LPN,int operation)
         Ps=FindLPNinList(DLRU_Head,LPN);
         if(Ps!=NULL){
             //命中的是DLRU
-            index=2;
+            index=1;
         }
     }else{
 //        命中的是CLRU
-        index=1;
+        index=0;
     }
 
     return index;
@@ -123,7 +123,7 @@ int CASA_HitCache(int LPN,int operation,int HitIndex)
     if(Ps==NULL){
         fprintf(stderr,"error happened in CASA_HitCache\n");
         fprintf(stderr,"Can not find LPN %d in CacheList\n",LPN);
-        exit(0);
+        assert(0);
     }
 //              命中操作
     buffer_hit_cnt++;
