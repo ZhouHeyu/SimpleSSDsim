@@ -14,7 +14,14 @@
 //外部调用的函数
 int FAB_init(int size,int blk_num)
 {
+    FAB_CACHE_SIZE=0;
+    FAB_BLK_NUM=0;
+    FAB_MAX_CACHE_SIZE=size;
+//   创建块索引链表的头部节点
+    FAB_Head=CreateBlkList();
 
+//
+    return 0;
 }
 
 void FAB_end()
@@ -45,6 +52,7 @@ double FAB_DelCacheEntry()
 
     return delay;
 }
+
 
 struct cache_operation FAB_Operation={
         init:   FAB_init,

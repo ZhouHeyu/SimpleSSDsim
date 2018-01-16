@@ -348,7 +348,22 @@ int find_free_pos( int *arr, int size)
     return -1;
 }
 
-
+//将数据插入到(int)arr数组指定的位置pos，pos之后的数据往后挪动一位
+int InsertArr(int *arr,int size,int data,int pos)
+{
+    int j;
+    //首先做一个错误检测
+    if(pos>=size&&pos<0){
+        printf("error happend in InsertArr: Insert-pos:%d over bound:0-%d",pos,size-1);
+        exit(-1);
+    }
+    for ( j = size-1; j >pos ; j--) {
+        arr[j]=arr[j-1];
+    }
+    //在pos的位置插入数据
+    arr[pos]=data;
+    return 0;
+}
 
 double callFsim(unsigned int secno, int scount, int operation)
 {
