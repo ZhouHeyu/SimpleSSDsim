@@ -138,6 +138,8 @@ double FAB_AddCacheEntry(int LPN,int operation)
         delay+=callFsim(LPN*4,4,1);
         physical_read++;
         return delay;
+    }else{
+        buffer_write_miss++;
     }
 
 //  针对没有写请求未命中,需要区分是否存在这个块
@@ -163,7 +165,8 @@ double FAB_AddCacheEntry(int LPN,int operation)
         pBlk->Next=ps;
         pBlk->Pre=FAB_Head;
         ps->Pre=pBlk;
-        FAB_Head->Next=ps;
+        FAB_Head->Next=pBlk;
+
         FAB_CACHE_SIZE++;
         FAB_BLK_NUM++;
 //       错误检测
@@ -218,6 +221,11 @@ double FAB_DelCacheEntry(int ReqLPN,int ReqOperation)
 //    聚簇回写使用到的变量
     int StartLPN,DelArr[PAGE_NUM_PER_BLK],InsertFlag=0;
     int LPNSize=1;
+
+//   初始化DelArr的数据
+    for ( i = 0; i <PAGE_NUM_PER_BLK ; ++i) {
+        DelArr[i]=-1;
+    }
 
 //    缓冲区未溢出没有必要执行置换算法或者是读请求
     if(FAB_CACHE_SIZE<FAB_MAX_CACHE_SIZE || ReqOperation!=0){
