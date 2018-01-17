@@ -184,7 +184,7 @@ double LRU_AddCacheEntry(int LPN,int operation)
 }
 
 //不管缓冲区是否满都调用该函数（满）
-double LRU_DelCacheEntry()
+double LRU_DelCacheEntry(int ReqLPN,int ReqOperation)
 {
     double delay=0.0;
     int victim_index=-1;

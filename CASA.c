@@ -230,7 +230,7 @@ double  CASA_AddCacheEntry(int LPN,int operation)
 }
 
 //缓冲区满的时候,删除脏页可能引发新的时延delay
-double CASA_DelCacheEntry()
+double CASA_DelCacheEntry(int ReqLPN,int ReqOperation)
 {
     double delay=0.0;
     pNode pVictim=NULL;

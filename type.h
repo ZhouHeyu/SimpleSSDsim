@@ -30,7 +30,7 @@ struct cache_operation{
     int (*SearchCache)(int LPN,int operation);
     int (*HitCache)(int LPN, int operation,int index);
     double (*AddCacheEntry)(int LPN,int operation);
-    double (*DelCacheEntry)();
+    double (*DelCacheEntry)(int LPN,int operation);
     void (*end) ();
 };
 

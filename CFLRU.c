@@ -215,7 +215,7 @@ double CFLRU_AddCacheEntry(int LPN,int operation)
     return delay;
 }
 
-double CFLRU_DelCacheEntry()
+double CFLRU_DelCacheEntry(int ReqLPN,int ReqOperation)
 {
     double delay=0.0;
     int DelLPN=-1;
