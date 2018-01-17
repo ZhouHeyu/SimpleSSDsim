@@ -8,6 +8,7 @@
 #include "LRU.h"
 #include "CFLRU.h"
 #include "CASA.h"
+#include "FAB.h"
 
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
@@ -173,7 +174,7 @@ void initFlash()
 //            之后块级的BPLRU算法
 //        case 6:cache_op=BPLRU_op_setup();break;
 //            块级的FAB算法
-//        case 7:cache_op=FAB_op_setup();break;
+        case 7:cache_op=FAB_op_setup();break;
 
     }
 
@@ -430,7 +431,7 @@ double CacheManage(unsigned int secno,int scount,int operation)
         HitIndex=cache_op->SearchCache(blkno,operation);
         if(HitIndex==-1){
 //            未命中缓冲区
-            flash_delay+=cache_op->DelCacheEntry();
+            flash_delay+=cache_op->DelCacheEntry(blkno,operation);
             flash_delay+=cache_op->AddCacheEntry(blkno,operation);
         }else{
 //            命中缓冲区
