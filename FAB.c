@@ -24,29 +24,6 @@ int FABGetCacheSize(pBlkNode pHead)
     return length;
 }
 
-//根据请求的LPNz找到对应的块节点的指针
-//函数也可以通过Hit查看对应的LPN是否存在缓冲区中
-pBlkNode FindHitBlkNode(pBlkNode pHead,int LPN,int *Hit)
-{
-    int tempBlk;
-    int i,flag=-1;
-    pBlkNode pBlk=NULL;
-    tempBlk=LPN/PAGE_NUM_PER_BLK;
-    pBlk=SearchBlkList(pHead,tempBlk);
-    if(pBlk==NULL){
-        (*Hit)=-1;
-        return pBlk;
-    }else{
-        for ( i = 0; i <PAGE_NUM_PER_BLK ; ++i) {
-            if(pBlk->list[i]==LPN){
-                flag=1;
-                break;
-            }
-        }
-    }
-    (*Hit)= flag == 1 ? 1 : 0;
-    return  pBlk;
-}
 
 //找到块节点链表中的块最大的块节点,第二参数是禁止删除的块节点的标号
 pBlkNode FindMaxSizeBlk(pBlkNode pHead, int ReqBlkNum)

@@ -31,5 +31,7 @@ int GetBlkListLength(pBlkNode pHead);
 pBlkNode  SearchBlkList(pBlkNode pHead,int BlkNum);
 //将命中的数据块移动队列的头部
 int BlkMoveToMRU(pBlkNode pHead,pBlkNode pHit);
-
+//根据请求的LPNz找到对应的块节点的指针
+//函数也可以通过Hit查看对应的LPN是否存在缓冲区中
+pBlkNode FindHitBlkNode(pBlkNode pHead,int LPN,int *Hit);
 #endif //SIMULATION_BLKLIST_H
