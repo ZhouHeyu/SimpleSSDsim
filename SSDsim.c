@@ -31,6 +31,7 @@ void InitGlobalVariable()
     ftl_type=4;
     CFLRU_alpha=0.5;
     CASA_Tau_Ratio=0.5;
+    ADLRU_MIN_LC=0.2;
 }
 
 void SSDsim_loadparams(char *filename)
@@ -78,6 +79,10 @@ void SSDsim_loadparams(char *filename)
 //                确保输入的值在合理的区间
                 if(0<temp&&temp<1) {
                     CASA_Tau_Ratio = temp;
+                }
+            }else if(strcmp(Stemp,"ADLRU_MIN_LC")==0){
+                if(0<temp&&temp<1) {
+                    ADLRU_MIN_LC=temp;
                 }
             }
         }

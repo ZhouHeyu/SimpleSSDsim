@@ -187,3 +187,70 @@ int AddNewToMRU(pNode pHead,pNode New)
     pHead->Next=New;
     return 0;
 }
+
+//查看链表中的节点是否存在干净页节点,如果不存在干净页则返回NULL
+pNode IsCleanNodeInList(pNode pHead)
+{
+    pNode ps=NULL,pt=pHead->Pre;
+    while(pt!=pHead){
+        if(pt->isD==0){
+            ps=pt;
+            return ps;
+        }
+        pt=pt->Pre;
+    }
+    return ps;
+}
+
+
+//基于二次机会的冷探测机制,找到节点中isCold的节点,并返回该节点
+pNode FindColdNodeInList(pNode pHead)
+{
+    pNode Victim=NULL,pt=NULL;
+    int count=0,L;
+    L=GetListLength(pHead);
+//     基于二次机会的冷探测机制,将isCold的节点置1移动到链表的MRU位置
+    Victim=pHead->Pre;
+    while(Victim->isCold!=1) {
+        pt = Victim;
+        Victim = Victim->Pre;
+        pt->isCold = 1;
+        //之前的Victim移动到Head后面
+        pt->Pre = pHead;
+        pt->Next = pHead->Next;
+        pHead->Next->Pre = pt;
+        pHead->Next = pt;
+        //衔接新的尾部
+        pHead->Pre = Victim;
+        Victim->Next = pHead;
+        //debug
+        count++;
+        if (count > L + 2) {
+            fprintf(stderr,"exist error in while\n");
+            assert(0);
+        }
+    }
+    //test for debug脏页提出一定最后是尾部的LRU
+    if (Victim != pHead->Pre) {
+        fprintf(stderr,"this operation exist error\n");
+        assert(0);
+    }
+
+    return Victim;
+
+}
+
+int DelVictimNodeInList(pNode pHead,pNode Victim)
+{
+    pNode ps;
+    int DelLPN=-1;
+    DelLPN=Victim->LPN;
+
+    ps=Victim->Pre;
+//    删除链接关系
+    ps->Next=Victim->Next;
+    Victim->Next->Pre=ps;
+//    释放对应的节点Victim的内存
+    free(Victim);
+    return DelLPN;
+}

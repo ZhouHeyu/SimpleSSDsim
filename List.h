@@ -15,6 +15,7 @@ typedef struct Node
     struct Node *Pre;
     struct Node *Next;
     int isD;
+    int isCold;
 }Node ,*pNode;
 //头节点
 //创建双向链表
@@ -37,4 +38,10 @@ int MoveToMRU(pNode pHead,pNode Hit);
 int DeleteLRU(pNode pHead,int *DelLPN);
 //将一个全新的节点添加到队列的MRU位置
 int AddNewToMRU(pNode pHead,pNode New);
+//查看链表中的节点是否存在干净页节点,如果不存在干净页则返回NULL
+pNode IsCleanNodeInList(pNode pHead);
+//基于二次机会的冷探测机制,找到节点中isCold的节点,并返回该节点
+pNode FindColdNodeInList(pNode pHead);
+//删除链表中指定Victim的节点,函数返回的是删除节点对应的LPN号
+int DelVictimNodeInList(pNode pHead,pNode Victim);
 #endif //SIMULATION_LIST_H

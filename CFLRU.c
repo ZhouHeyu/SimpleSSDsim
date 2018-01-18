@@ -160,7 +160,7 @@ int CFLRU_HitCache(int LPN,int operation ,int index)
 //   统计命中的操作
     buffer_hit_cnt++;
     if(operation==0){
-        HitNode->isD=0;
+        HitNode->isD=1;
         buffer_write_hit++;
         cache_write_num++;
     }else{

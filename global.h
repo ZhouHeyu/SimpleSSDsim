@@ -75,6 +75,8 @@ int cache_size;
 double CFLRU_alpha;
 //关于初始化CASA的Tau值比例,默认是0.5
 double CASA_Tau_Ratio;
+//关于AD-LRU算法的最小冷区比例,默认是0.2;
+double ADLRU_MIN_LC;
 
 
 //...............这里可以扩展添加之后的参数
