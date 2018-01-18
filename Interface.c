@@ -9,6 +9,7 @@
 #include "CFLRU.h"
 #include "CASA.h"
 #include "FAB.h"
+#include "ADLRU.h"
 
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
@@ -165,8 +166,8 @@ void initFlash()
         case 1: cache_op=LRU_op_setup();break;
 //        CFLRU
         case 2: cache_op=CFLRU_op_setup();break;
-////        AD-LRU
-//        case 3: cache_op=ADLRU_op_setup();break;
+//        AD-LRU
+        case 3: cache_op=ADLRU_op_setup();break;
 //        CASA
         case 4: cache_op=CASA_op_setup();break;
 //           LRU-WSR

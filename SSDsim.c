@@ -150,6 +150,41 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
     fflush(outputfile);
     fprintf(outputfile,"cache_size=%d\n",cache_size);
     fflush(outputfile);
+
+//    //    选择相应的缓冲区算法
+//    switch(cache_type){
+////        LRU
+//        case 1: cache_op=LRU_op_setup();break;
+////        CFLRU
+//        case 2: cache_op=CFLRU_op_setup();break;
+////        AD-LRU
+//        case 3: cache_op=ADLRU_op_setup();break;
+////        CASA
+//        case 4: cache_op=CASA_op_setup();break;
+////           LRU-WSR
+////        case 5: cache_op=LRUWSR_op_setup();break;
+////            之后块级的BPLRU算法
+////        case 6:cache_op=BPLRU_op_setup();break;
+////            块级的FAB算法
+//        case 7:cache_op=FAB_op_setup();break;
+//
+//    }
+
+
+//   添加输出关于cache算法选择的信息:
+    switch (cache_type){
+        case 1:
+            fprintf(outputfile,"cache_type :%d --> LRU alogrithm\n",cache_type);
+            fprintf(outputfile, "cache-size is %d\n",cache_size);
+            break;
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            break;
+    }
     fprintf(outputfile,"cache_type= %d\n",cache_type);
     fflush(outputfile);
     fprintf(outputfile,"ftl_type= %d\n",ftl_type);
