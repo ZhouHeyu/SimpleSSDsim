@@ -148,9 +148,8 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
     fflush(outputfile);
     fprintf(outputfile,"flash_extrablocks= %d\n",flash_extrblocks);
     fflush(outputfile);
-    fprintf(outputfile,"cache_size=%d\n",cache_size);
-    fflush(outputfile);
 
+    fprintf(outputfile,"=================================================\n");
 //   添加输出关于cache算法选择的信息:
     switch (cache_type){
         case 1:
@@ -183,6 +182,7 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
             fprintf(outputfile,"cache-size is %d\n",cache_size);
             break;
     }
+    fprintf(outputfile,"=================================================\n");
     fflush(outputfile);
 
     fprintf(outputfile,"cache_type= %d\n",cache_type);

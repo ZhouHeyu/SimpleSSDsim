@@ -3,6 +3,8 @@
 flash_numblocks= 2097152
 flash_extrablocks= 65536
 cache_size=1024
+cache-type :7 ------->FAB alogrithm
+cache-size is 1024
 cache_type= 7
 ftl_type= 4
 CFLRU_alpha=0.500000
