@@ -160,6 +160,7 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
         case 2:
             fprintf(outputfile,"cache_type :%d -------> CFLRU alogrithm\n",cache_type);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
+            fprintf(outputfile,"CFLRU alpha is %lf\n",CFLRU_alpha);
             break;
         case 3:
             fprintf(outputfile,"cache-type :%d ------->AD-LRU alogrithm\n",cache_type);
