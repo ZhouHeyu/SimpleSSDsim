@@ -1,12 +1,12 @@
 
-*** Output file name: ../output/FAB.outv
+*** Output file name: ../output/ADLRU.outv
 flash_numblocks= 2097152
 flash_extrablocks= 65536
 =================================================
-cache-type :7 ------->FAB alogrithm
+cache-type :3 ------->AD-LRU alogrithm
 cache-size is 1024
 =================================================
-cache_type= 7
+cache_type= 3
 ftl_type= 4
 CFLRU_alpha=0.500000
 *** I/O trace used: ../trace/synx
@@ -16,14 +16,14 @@ simulation complete
 CACHE STATISTICS
 ------------------------------------------------------------
 All buffer req count# 875017
-Buffer_Miss_Count # 243995	Hit rate is 0.721154
-Read Hit count is 526653	Write Hit count is 104369
-Read Miss count is 216294	Write Miss count is 27701
-Physical Read Count is 243995	Physical Write Count is 26677
+Buffer_Miss_Count # 502653	Hit rate is 0.425551
+Read Hit count is 372115	Write Hit count is 249
+Read Miss count is 370832	Write Miss count is 131821
+Physical Read Count is 502653	Physical Write Count is 130802
 ------------------------------------------------------------
 
 FLASH STATISTICS
 ------------------------------------------------------------
- Page read (#):   243995    Page write (#):    26677    Block erase (#):     5331
- GC page read (#):    67540    GC page write (#):    67540
+ Page read (#):   502653    Page write (#):   130802    Block erase (#):    40066
+ GC page read (#):   592168    GC page write (#):   592168
 ------------------------------------------------------------

@@ -236,10 +236,11 @@ double ADLRU_DelCacheEntry(int ReqLPN,int ReqOperation)
         HOT_CACHE_SIZE--;
     }
 //  错误判断
-    if(HOT_CACHE_SIZE!=GetListLength(HotLRU_Head)||COLD_CACHE_SIZE!=GetListLength(HotLRU_Head)){
+    if(HOT_CACHE_SIZE !=GetListLength(HotLRU_Head) || COLD_CACHE_SIZE !=GetListLength(ColdLRU_Head)){
         fprintf(stderr,"error happend in ADLRU_DelCacheEntry!\n");
         fprintf(stderr,"HOT_CACHE_SIZE is %d\t Hot-list is %d\n",HOT_CACHE_SIZE,GetListLength(HotLRU_Head));
         fprintf(stderr,"COLD_CACHE_SIZE is %d\t Cold-list is %d\n",COLD_CACHE_SIZE,GetListLength(ColdLRU_Head));
+        assert(0);
     }
 
     return delay;
