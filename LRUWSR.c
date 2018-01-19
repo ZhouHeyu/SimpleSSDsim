@@ -9,61 +9,6 @@
 #include "Interface.h"
 
 
-//无论热区还是冷区,选择剔除的时候都是优先置换干净页,之后基于二次机会遍历选择脏页
-//函数返回的是需要剔除页的节点指针
-pNode FindVictimList(pNode pHead)
-{
-    pNode Victim=NULL;
-    //debug test
-    if(IsEmptyList(pHead)!=0){
-        fprintf(stderr,"error happened in FindVictimList ");
-        fprintf(stderr,"the list is empty!\n");
-        assert(0);
-    }
-    //debug test
-    //先遍历寻找队列中尾部的干净页优先提出
-    Victim=IsCleanNodeInList(pHead);
-    if(Victim==NULL){
-//        不存在干净页则选择脏页,基于二次机会找到脏页
-        Victim=FindColdNodeInList(pHead);
-    }
-
-    return Victim;
-}
-
-int DelLRUList(pNode pHead)
-{
-    int DelLPN=-1;
-    pNode pt=pHead->Pre;
-    if(pt==pHead){
-        printf("error happend in DelLRUList\n");
-        printf("List is empty！！\n");
-        exit(-1);
-    }
-    //将尾部衔接
-    pt->Pre->Next=pHead;
-    pHead->Pre=pt->Pre;
-    //
-    DelLPN=pt->LPN;
-    if(DelLPN==-1){
-        printf("error happend in DelLRUList:\n");
-        printf("DelLPN == -1\n");
-        exit(-1);
-    }
-    //释放删除点pt的内存
-    free(pt);
-    LRUWSR_Cache_Num_Entry--;
-//    错误检测
-    if (LRUWSR_Cache_Num_Entry!=GetListLength(pHead)){
-        printf("error happend in DelLRUList:\n");
-        printf("LRUWSR_CACHE_SIZE is %d\t list-size is %d\t",LRUWSR_Cache_Num_Entry,GetListLength(pHead));
-        exit(-1);
-    }
-
-    return DelLPN;
-}
-
-
 
 //该函数完成对双链表的创建，窗口大小的设置，最大缓冲区配置
 int LRUWSR_init(int size,int blk_num)

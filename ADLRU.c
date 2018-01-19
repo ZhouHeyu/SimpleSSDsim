@@ -10,29 +10,6 @@
 #include "Interface.h"
 
 
-//无论热区还是冷区,选择剔除的时候都是优先置换干净页,之后基于二次机会遍历选择脏页
-//函数返回的是需要剔除页的节点指针
-pNode FindVictimList(pNode pHead)
-{
-    pNode Victim=NULL;
-    //debug test
-    if(IsEmptyList(pHead)!=0){
-        fprintf(stderr,"error happened in FindVictimList ");
-        fprintf(stderr,"the list is empty!\n");
-        assert(0);
-    }
-    //debug test
-    //先遍历寻找队列中尾部的干净页优先提出
-    Victim=IsCleanNodeInList(pHead);
-    if(Victim==NULL){
-//        不存在干净页则选择脏页,基于二次机会找到脏页
-        Victim=FindColdNodeInList(pHead);
-    }
-
-    return Victim;
-}
-
-
 int ADLRU_init(int cache_size,int blk_num)
 {
     ADLRU_CACHE_MAX_SIZE=cache_size;

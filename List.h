@@ -44,4 +44,7 @@ pNode IsCleanNodeInList(pNode pHead);
 pNode FindColdNodeInList(pNode pHead);
 //删除链表中指定Victim的节点,函数返回的是删除节点对应的LPN号
 int DelVictimNodeInList(pNode pHead,pNode Victim);
+//无论热区还是冷区,选择剔除的时候都是优先置换干净页,之后基于二次机会遍历选择脏页
+//函数返回的是需要剔除页的节点指针
+pNode FindVictimList(pNode pHead);
 #endif //SIMULATION_LIST_H
