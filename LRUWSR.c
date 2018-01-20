@@ -10,6 +10,42 @@
 
 
 
+
+//找到LRUWSR算法中剔除干净页并不是遍历全部的节点找到干净页剔除,而是判断LRU的数据页是否为冷脏或干净页进行选择剔除
+pNode FindCleanOrColdNode(pNode pHead){
+    pNode Victim=NULL,ps;
+    Victim=pHead->Pre;
+    int count=0,L;
+    L=GetListLength(pHead);
+    while((Victim->isD!=0 || Victim->isCold!=0)){
+//        进入循环的节点是dirty and hot
+        Victim->isCold=1;
+//       选择上一个作为新的核实节点
+        ps=Victim;
+        Victim=ps->Pre;
+        pHead->Pre=Victim;
+        Victim->Next=pHead;
+//        将核实过的节点移动到MRU位置
+        ps->Next=pHead->Next;
+        ps->Pre=pHead;
+        pHead->Next->Pre=ps;
+        pHead->Next=ps;
+        count++;
+//        debug
+        if(count >=L+2 ){
+            fprintf(stderr,"while count over the limit !");
+            assert(0);
+        }
+    }
+
+//    错误检测
+    if(Victim!=pHead->Pre){
+        fprintf(stderr,"error happend in FindClean or Cold Node : Victim is not LRU page!");
+        assert(0);
+    }
+    return Victim;
+}
+
 //该函数完成对双链表的创建，窗口大小的设置，最大缓冲区配置
 int LRUWSR_init(int size,int blk_num)
 {
@@ -140,7 +176,7 @@ double LRUWSR_DelCacheEntry(int ReqLPN,int ReqOperation)
     }
 
 //   首先选择链表中的干净页进行删除.其次选择脏页
-    pVictim=FindVictimList(LRUWSR_Head);
+    pVictim=FindCleanOrColdNode(LRUWSR_Head);
     DelLPN=pVictim->LPN;
 //  如果选择的是干净页,则直接删除即可,脏页则需要回写操作
     if(pVictim->isD!=0){

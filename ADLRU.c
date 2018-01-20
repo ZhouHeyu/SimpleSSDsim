@@ -179,7 +179,7 @@ double ADLRU_DelCacheEntry(int ReqLPN,int ReqOperation)
 //  剔除操作的时候,比较选择冷区还是热区的剔除页
     if(COLD_CACHE_SIZE>COLD_MIN){
 //        选择冷区中的页进行剔除
-        pVictim=FindVictimList(ColdLRU_Head);
+        pVictim= FindVictimNode_CleanFirst(ColdLRU_Head);
 //        debug
         if(pVictim==NULL){
             fprintf(stderr,"error happend in ADLRU_DelCacheEntry!\n");
@@ -197,7 +197,7 @@ double ADLRU_DelCacheEntry(int ReqLPN,int ReqOperation)
 
     }else{
 //        选择热区中的页进行剔除
-        pVictim=FindVictimList(HotLRU_Head);
+        pVictim= FindVictimNode_CleanFirst(HotLRU_Head);
         if(pVictim==NULL){
             fprintf(stderr,"error happend in ADLRU_DelCacheEntry!\n");
             fprintf(stderr,"can not find Victim in Hot-list!\n");
