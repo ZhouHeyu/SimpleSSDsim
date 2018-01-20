@@ -24,16 +24,15 @@ pNode CreateList()
 
 
 //删除整个链表，释放内存（这里有点小问题)
-void FreeList(pNode *ppHead)
+void FreeList(pNode pHead)
 {
-    pNode pt=NULL;
-    while(*ppHead!=NULL){
-        pt=(*ppHead)->Next;
-        free(*ppHead);
-        if(NULL!=pt)
-            pt->Pre=NULL;
-        *ppHead=pt;
+    pNode pt=pHead->Pre,ps;
+    while(pt!=pHead){
+        ps=pt;
+        pt=pt->Next;
+        free(ps);
     }
+    free(pHead);
 }
 
 

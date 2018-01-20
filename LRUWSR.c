@@ -64,7 +64,7 @@ int LRUWSR_init(int size,int blk_num)
 void LRUWSR_end()
 {
     //释放双链表的空间
-    FreeList(&LRUWSR_Head);
+    FreeList(LRUWSR_Head);
 }
 
 

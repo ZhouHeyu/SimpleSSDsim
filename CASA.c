@@ -76,8 +76,8 @@ int CASA_init(int cache_size,int blk_num)
 
 void CASA_end()
 {
-    FreeList(&CLRU_Head);
-    FreeList(&DLRU_Head);
+    FreeList(CLRU_Head);
+    FreeList(DLRU_Head);
 }
 
 //变量缓冲区,返回索引的结果,返回-1未命中,0命中的CLRU,1命中的是DLRU

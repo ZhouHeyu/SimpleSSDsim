@@ -21,7 +21,7 @@ typedef struct Node
 //创建双向链表
 pNode CreateList();
 //删除整个链表，释放内存（这里有点小问题)
-void FreeList(pNode *ppHead);
+void FreeList(pNode pHead);
 //判断链表是否为空
 int IsEmptyList(pNode pHead);
 //返回链表的长度

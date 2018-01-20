@@ -118,7 +118,7 @@ int CFLRU_init(int size,int blk_num)
 void CFLRU_end()
 {
     //释放双链表的空间
-    FreeList(&CFLRU_Head);
+    FreeList(CFLRU_Head);
 }
 
 //函数返回命中LPN在链表中的位置index,如果没有命中则返回-1

@@ -37,8 +37,8 @@ int ADLRU_init(int cache_size,int blk_num)
 //结束释放内存
 void ADLRU_end()
 {
-    FreeList(&ColdLRU_Head);
-    FreeList(&HotLRU_Head);
+    FreeList(ColdLRU_Head);
+    FreeList(HotLRU_Head);
 }
 
 ///热的index==1 冷的index==0,没有命中则是-1
