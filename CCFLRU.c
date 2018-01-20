@@ -64,7 +64,7 @@ int CCFLRU_Search(int LPN,int operation)
     pt=FindLPNinList(CCL_Head,LPN);
     if(pt==NULL){
         pt=FindLPNinList(ML_Head,LPN);
-        if(pt==NULL){
+        if(pt!=NULL){
             type=1;
         }
     }else{

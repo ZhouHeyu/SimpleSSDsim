@@ -176,6 +176,7 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
         case 6:
             fprintf(outputfile,"cache-type :%d ------->CCF-LRU alogrithm\n",cache_type);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
+            break;
         case 7:
             fprintf(outputfile,"cache-type :%d ------->BPLRU alogrithm\n",cache_type);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
@@ -187,12 +188,7 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
     }
     fprintf(outputfile,"=================================================\n");
     fflush(outputfile);
-
-    fprintf(outputfile,"cache_type= %d\n",cache_type);
-    fflush(outputfile);
     fprintf(outputfile,"ftl_type= %d\n",ftl_type);
-    fflush(outputfile);
-    fprintf(outputfile,"CFLRU_alpha=%lf\n",CFLRU_alpha);
     fflush(outputfile);
     //加载仿真的负载文件
     SSDsim_setup_iotracefile(argv[3]);
