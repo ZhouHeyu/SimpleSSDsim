@@ -1,0 +1,29 @@
+
+*** Output file name: ../output/LRUWSR.outv
+flash_numblocks= 2097152
+flash_extrablocks= 65536
+=================================================
+cache-type :5 ------->LRU alogrithm
+cache-size is 1024
+=================================================
+cache_type= 5
+ftl_type= 4
+CFLRU_alpha=0.500000
+*** I/O trace used: ../trace/synx
+Initialization complete
+simulation complete
+
+CACHE STATISTICS
+------------------------------------------------------------
+All buffer req count# 875017
+Buffer_Miss_Count # 620780	Hit rate is 0.290551
+Read Hit count is 254002	Write Hit count is 235
+Read Miss count is 488945	Write Miss count is 131835
+Physical Read Count is 620780	Physical Write Count is 130812
+------------------------------------------------------------
+
+FLASH STATISTICS
+------------------------------------------------------------
+ Page read (#):   620780    Page write (#):   130812    Block erase (#):    39830
+ GC page read (#):   589921    GC page write (#):   589921
+------------------------------------------------------------

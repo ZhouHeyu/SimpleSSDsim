@@ -180,7 +180,7 @@ void initFlash()
 //            块级的FAB算法
         case 7:cache_op=FAB_op_setup();break;
 //            BPLRU算法
-//        case 8:cache_op=BPLRU_op_setup();break;
+        case 8:cache_op=BPLRU_op_setup();break;
 
     }
 
