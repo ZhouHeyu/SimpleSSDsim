@@ -11,18 +11,7 @@
 #include "Interface.h"
 
 
-//返回当前的缓冲区的大小
-int FABGetCacheSize(pBlkNode pHead)
-{
-    int length=0;
-    pBlkNode  pt=pHead->Next;
-    while (pt !=pHead)
-    {
-        length+=pt->BlkSize;
-        pt=pt->Next;
-    }
-    return length;
-}
+
 
 
 //找到块节点链表中的块最大的块节点,第二参数是禁止删除的块节点的标号
@@ -283,9 +272,9 @@ double FAB_DelCacheEntry(int ReqLPN,int ReqOperation)
         fprintf(stderr,"FAB_BLK_NUM is %d\t FAB_BLK_LIST size is %d\n",FAB_BLK_NUM,GetBlkListLength(FAB_Head));
         assert(0);
     }
-    if(FAB_CACHE_SIZE!=FABGetCacheSize(FAB_Head)){
+    if(FAB_CACHE_SIZE!= BlkGetCacheSize(FAB_Head)){
         fprintf(stderr,"error happend in FAB_DelCacheEntry\n");
-        fprintf(stderr,"FAB_CACHE_SIZE is %d\t cache-list-size is %d\n",FAB_CACHE_SIZE,FABGetCacheSize(FAB_Head));
+        fprintf(stderr,"FAB_CACHE_SIZE is %d\t cache-list-size is %d\n",FAB_CACHE_SIZE, BlkGetCacheSize(FAB_Head));
         assert(0);
     }
 

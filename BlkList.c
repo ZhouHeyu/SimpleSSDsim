@@ -102,6 +102,21 @@ int BlkMoveToMRU(pBlkNode pHead,pBlkNode pHit)
     return 0;
 }
 
+int BlkMoveToLRU(pBlkNode pHead,pBlkNode pHit)
+{
+    pBlkNode ps;
+    ps=pHit->Pre;
+    //删除原来位置中的链接关系
+    ps->Next=pHit->Next;
+    pHit->Next->Pre=ps;
+    //插入到对应的位置,嵌入到MRU位置
+    pHit->Pre=pHead->Pre;
+    pHit->Next=pHead;
+    pHead->Pre->Next=pHit;
+    pHead->Pre=pHit;
+    return 0;
+}
+
 //根据请求的LPNz找到对应的块节点的指针
 //函数也可以通过Hit查看对应的LPN是否存在缓冲区中
 pBlkNode FindHitBlkNode(pBlkNode pHead,int LPN,int *Hit)
@@ -127,4 +142,55 @@ pBlkNode FindHitBlkNode(pBlkNode pHead,int LPN,int *Hit)
 }
 
 
+int BlkAddNewToMRU(pBlkNode pHead,pBlkNode p_new)
+{
+    p_new->Pre=pHead;
+    p_new->Next=pHead->Next;
+    pHead->Next->Pre=p_new;
+    pHead->Next=p_new;
+    return 0;
+}
 
+//返回以块节点组织的cache大小-->当前的缓冲区的大小
+int BlkGetCacheSize(pBlkNode pHead)
+{
+    int length=0;
+    pBlkNode  pt=pHead->Next;
+    while (pt !=pHead)
+    {
+        length+=pt->BlkSize;
+        pt=pt->Next;
+    }
+    return length;
+}
+
+
+//删除块链表中指定的节点,放回删除节点的包含的页的个数
+int BlkDeleteNode(pBlkNode pHead,pBlkNode Victim)
+{
+    int DelSize=-1;
+    DelSize=Victim->BlkSize;
+    int flag=0;
+    pBlkNode  ps=pHead->Next;
+//   debug
+    while(ps!=pHead){
+        if(ps==Victim) {
+            flag=1;
+            break;
+        }
+        ps=ps->Next;
+    }
+    if(flag==0){
+        fprintf(stderr,"blk-list not clude Victim Node!\n");
+        assert(0);
+    }
+//    debug
+    ps=Victim->Next;
+//     new link
+    ps->Pre=Victim->Pre;
+    Victim->Pre->Next=ps;
+//    释放节点内存
+    free(Victim);
+
+    return DelSize;
+}
