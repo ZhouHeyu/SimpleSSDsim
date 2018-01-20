@@ -11,6 +11,7 @@
 #include "FAB.h"
 #include "ADLRU.h"
 #include "LRUWSR.h"
+#include "CCFLRU.h"
 
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
@@ -174,7 +175,7 @@ void initFlash()
 //        LRU-WSR
         case 5: cache_op=LRUWSR_op_setup();break;
 //         CCF-LRU
-//        case 6:cache_op=CCFLRU_op_setup();break;
+        case 6:cache_op=CCFLRU_op_setup();break;
 //            块级的FAB算法
         case 7:cache_op=FAB_op_setup();break;
 //            BPLRU算法
