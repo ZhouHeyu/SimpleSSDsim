@@ -4,7 +4,7 @@
 //
 
 #include "BPLRU.h"
-
+#include "Interface.h"
 
 //用于页补偿,记录上一次的请求的块号
 int LastBlkNum;
@@ -36,7 +36,7 @@ void BPLRU_end()
 }
 
 
-//该函数对
+//函数返回的Hit_flag表示的命中情况,同时处理了全局变量Seq_flag,用来判断当前的请求是否未连续写模式
 int BPLRU_Search(int LPN,int operation)
 {
     int Hit_Flag=-1;
@@ -59,7 +59,7 @@ int BPLRU_Search(int LPN,int operation)
         }
     }else{
 //        非连续写请求
-        SameBlkHit=0;
+        SameBlkHit=1;
         LastBlkNum=tempBlk;
         Seq_flag=0;
     }
@@ -70,8 +70,27 @@ int BPLRU_Search(int LPN,int operation)
     return Hit_Flag;
 }
 
+
+//  在BPLRU算法中,只针对写请求处理,读请求命中不做任何的处理
 int BPLRU_HitCache(int LPN,int operation,int type)
 {
+    buffer_hit_cnt++;
+    if(operation!=0){
+        buffer_read_hit++;
+        cache_read_num++;
+        return 0;
+    }else{
+        buffer_write_hit++;
+        cache_write_num++;
+    }
+//  根据当前的写入模式进行不同的操作
+//    顺序写模式
+    if(Seq_flag==1){
+
+    }else{
+//     非顺序写模式
+    }
+
     return 0;
 }
 

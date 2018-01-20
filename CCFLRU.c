@@ -13,8 +13,8 @@ pNode FindColdVictim(pNode pHead)
     Victim=pHead->Pre;
     int count=0,L;
     L=GetListLength(pHead);
-    while(Victim->isD!=1){
-        Victim->isD=1;
+    while(Victim->isCold!=1){
+        Victim->isCold=1;
         ps=Victim;
         Victim=ps->Pre;
 //        new Victim link
