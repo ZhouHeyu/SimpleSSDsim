@@ -221,7 +221,7 @@ double BPLRU_DelCacheEntry(int ReqLPN,int Reqoperation)
                 break;
             }
         }
-        if(flag==1){
+        if(flag==0){
             delay+=callFsim(curr_LPN*4,4,1);
         }
     }

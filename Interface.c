@@ -5,6 +5,7 @@
 #include "Interface.h"
 #include "flash.h"
 #include "fast.h"
+#include "dftl.h"
 #include "LRU.h"
 #include "CFLRU.h"
 #include "CASA.h"
@@ -157,7 +158,7 @@ void initFlash()
 //            // blockmap
 //            //case 2: ftl_op = bm_setup(); break;
 //            // o-pagemap
-//        case 3: ftl_op = opm_setup(); break;
+        case 3: ftl_op = opm_setup(); break;
 //            // fast
         case 4: ftl_op = lm_setup(); break;
 
@@ -372,44 +373,99 @@ int InsertArr(int *arr,int size,int data,int pos)
     return 0;
 }
 
+int youkim_flag=0;
+
 double callFsim(unsigned int secno, int scount, int operation)
 {
     double delay;
     int bcount;
     unsigned int blkno; // pageno for page based FTL
-    int cnt;
+    int cnt,z;
+    int min_ghost;
+    int pos=-1,pos_real=-1,pos_ghost=-1;
+
+//  DFTL算法初始化,初始化map_table的页数(也就是GTD)
+    if(ftl_type == 3) {
+        page_num_for_2nd_map_table = (opagemap_num / MAP_ENTRIES_PER_PAGE);
+
+        if(youkim_flag == 0 ) {
+            youkim_flag = 1;
+            init_arr();
+        }
+
+        if((opagemap_num % MAP_ENTRIES_PER_PAGE) != 0){
+            page_num_for_2nd_map_table++;
+        }
+
+        blkno+=page_num_for_2nd_map_table;
+    }
 
 
-    blkno = secno / 4;
-    bcount = (secno + scount -1)/4 - (secno)/4 + 1;
+    // page based FTL
+    if(ftl_type == 1 ) {
+        blkno = secno / 4;
+        bcount = (secno + scount -1)/4 - (secno)/4 + 1;
+    }
+        // block based FTL
+    else if(ftl_type == 2){
+        blkno = secno/4;
+        bcount = (secno + scount -1)/4 - (secno)/4 + 1;
+    }
+//         (DFTL)o-pagemap scheme
+    else if(ftl_type == 3 ) {
+        blkno = secno / 4;
+//      访问的LPN加上翻译页的偏移量!!!,即0-page_num_for_2nd_map_table的LPN是作为翻译页的LPN保留
+        blkno += page_num_for_2nd_map_table;
+        bcount = (secno + scount -1)/4 - (secno)/4 + 1;
+    }
+        // FAST scheme
+    else if(ftl_type == 4){
+        blkno = secno/4;
+        bcount = (secno + scount -1)/4 - (secno)/4 + 1;
+    }
 
 
     cnt = bcount;
     reset_flash_stat();
 
-    switch(operation)
+
+//   operation 0: write 1: read
+
+    while(cnt > 0)
     {
-        //write/read
-        case 0:
-        case 1:
+        cnt--;
 
-            while(cnt > 0)
-            {
-                cnt--;
-                // FAST scheme
-                 if(ftl_type == 4){
+//                 page based FTL
+        if(ftl_type == 1){
+            send_flash_request(blkno*4, 4, operation, 1);
+            blkno++;
+        }
 
-                    if(operation == 0){
-                        write_count++;
-                    }
-                    else read_count++;
+//                     block based FTL
+        else if(ftl_type == 2){
+            send_flash_request(blkno*4, 4, operation, 1);
+            blkno++;
+        }
 
-                    send_flash_request(blkno*4, 4, operation, 1); //cache_min is a page for page baseed FTL
-                    blkno++;
-                }
+//                 FAST scheme
+         else if(ftl_type == 4){
+
+            if(operation == 0){
+                write_count++;
             }
-            break;
+            else read_count++;
+
+            send_flash_request(blkno*4, 4, operation, 1); //cache_min is a page for page baseed FTL
+            blkno++;
+        }
+//                FAST scheme end
+//                    DFTL scheme
+        else if(ftl_type==3){
+            blkno++;
+        }
+//                DFTL scheme end
     }
+
 
     delay = calculate_delay_flash();
 
