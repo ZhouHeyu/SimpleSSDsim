@@ -17,7 +17,7 @@ pNode FindCleanOrColdNode(pNode pHead){
     Victim=pHead->Pre;
     int count=0,L;
     L=GetListLength(pHead);
-    while((Victim->isD!=0 || Victim->isCold!=0)){
+    while((Victim->isD!=0 || Victim->isCold!=1)){
 //        进入循环的节点是dirty and hot
         Victim->isCold=1;
 //       选择上一个作为新的核实节点
