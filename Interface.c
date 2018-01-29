@@ -461,6 +461,107 @@ double callFsim(unsigned int secno, int scount, int operation)
 //                FAST scheme end
 //                    DFTL scheme
         else if(ftl_type==3){
+//            如果缓存存在对应的映射项
+            if((opagemap[blkno].map_status == MAP_REAL) || (opagemap[blkno].map_status == MAP_GHOST)){
+                opagemap[blkno].map_age++;
+//               映射项在Ghost队列
+                if(opagemap[blkno].map_status == MAP_GHOST){
+//                  第一次寻找的real_min的索引初始化，从0开始,real_min可以理解为LPN（这里可能是扇区）
+                    if ( real_min == -1 ) {
+                        real_min = 0;
+                        find_real_min();
+                    }
+//                    ghost的age大于real最小的age则会触发一次数据交换
+                    if(opagemap[real_min].map_age <= opagemap[blkno].map_age)
+                    {
+                        find_real_min();  // probably the blkno is the new real_min alwaz
+                        opagemap[blkno].map_status = MAP_REAL;
+                        opagemap[real_min].map_status = MAP_GHOST;
+
+                        pos_ghost = search_table(ghost_arr,MAP_GHOST_MAX_ENTRIES,blkno);
+                        ghost_arr[pos_ghost] = -1;
+
+                        pos_real = search_table(real_arr,MAP_REAL_MAX_ENTRIES,real_min);
+                        real_arr[pos_real] = -1;
+
+                        real_arr[pos_real]   = blkno;
+                        ghost_arr[pos_ghost] = real_min;
+                    }
+
+                } else if(opagemap[blkno].map_status==MAP_REAL){
+//                    映射项在Real队列
+                    if ( real_max == -1 ) {
+                        real_max = 0;
+                        find_real_max();
+                        printf("Never happend\n");
+                    }
+
+                    if(opagemap[real_max].map_age <= opagemap[blkno].map_age)
+                    {
+                        real_max = blkno;
+                    }
+
+                }else{
+//                    错误判断
+                    printf(stderr,"forbidden/shouldnt happen real =%d , ghost =%d\n",MAP_REAL,MAP_GHOST);
+                    assert(0);
+                }
+//            缓存中没有对应的映射关系项
+            }else{
+//                如果Real队列满了，则进行转移到ghost的操作
+                if((MAP_REAL_MAX_ENTRIES - MAP_REAL_NUM_ENTRIES) == 0){
+//                 如果Ghost队列满了，则进行剔除操作
+                    if((MAP_GHOST_MAX_ENTRIES - MAP_GHOST_NUM_ENTRIES) == 0){
+//                        找到ghost队列中LRU的项
+                        min_ghost = find_min_ghost_entry();
+//                        映射项回写剔除
+                        if(opagemap[min_ghost].update == 1) {
+                            update_reqd++;
+                            opagemap[min_ghost].update = 0;
+                            send_flash_request(((min_ghost-page_num_for_2nd_map_table)/MAP_ENTRIES_PER_PAGE)*4, 4, 1, 2);   // read from 2nd mapping table then update it
+
+                            send_flash_request(((min_ghost-page_num_for_2nd_map_table)/MAP_ENTRIES_PER_PAGE)*4, 4, 0, 2);   // write into 2nd mapping table
+                        }
+                        opagemap[min_ghost].map_status = MAP_INVALID;
+//                      移除ghost的LRU映射项
+                        pos = search_table(ghost_arr,MAP_GHOST_MAX_ENTRIES,min_ghost);
+                        ghost_arr[pos]=-1;
+                        MAP_GHOST_NUM_ENTRIES--;
+                    }
+//                  将Real中的映射项移入到ghost中
+                    MAP_REAL_NUM_ENTRIES--;
+                    find_real_min();
+                    opagemap[real_min].map_status = MAP_GHOST;
+
+                    pos = search_table(real_arr,MAP_REAL_MAX_ENTRIES,real_min);
+                    real_arr[pos]=-1;
+
+                    pos = find_free_pos(ghost_arr,MAP_GHOST_MAX_ENTRIES);
+                    ghost_arr[pos]=real_min;
+
+                    MAP_GHOST_NUM_ENTRIES++;
+                }
+//              将缺失的映射项载入到Real的MRU位置
+                send_flash_request(((blkno-page_num_for_2nd_map_table)/MAP_ENTRIES_PER_PAGE)*4, 4, 1, 2);   // read from 2nd mapping table
+
+                opagemap[blkno].map_status = MAP_REAL;
+
+                opagemap[blkno].map_age = opagemap[real_max].map_age + 1;
+                real_max = blkno;
+                MAP_REAL_NUM_ENTRIES++;
+
+                pos = find_free_pos(real_arr,MAP_REAL_MAX_ENTRIES);
+                real_arr[pos] = blkno;
+            }
+//           以上处理完了映射关系，下面处理数据页的更新
+            if(operation==0){
+                write_count++;
+                opagemap[blkno].update = 1;
+            }
+            else
+                read_count++;
+
+            send_flash_request(blkno*4, 4, operation, 1);
             blkno++;
         }
 //                DFTL scheme end
