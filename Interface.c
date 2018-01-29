@@ -503,7 +503,7 @@ double callFsim(unsigned int secno, int scount, int operation)
 
                 }else{
 //                    错误判断
-                    printf(stderr,"forbidden/shouldnt happen real =%d , ghost =%d\n",MAP_REAL,MAP_GHOST);
+                    fprintf(stderr,"forbidden/shouldnt happen real =%d , ghost =%d\n",MAP_REAL,MAP_GHOST);
                     assert(0);
                 }
 //            缓存中没有对应的映射关系项
