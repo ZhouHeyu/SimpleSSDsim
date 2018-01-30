@@ -232,6 +232,13 @@ void SSDsim_cleanup_and_printstats()
 void SSDsim_run_simulation()
 {
     double delay=0.0;
+//    关于最小最大IO请求时间统计
+    Req_Max_Delay=0.0;
+    Req_Min_Delay=99999999;
+    Req_Ave_Delay=0;
+    Req_Count=0;
+    double SumDelay=0.0;
+
     ioreq=(ioreq_event *)malloc(sizeof(ioreq_event));
     if(ioreq==NULL){
         fprintf(stderr,"malloc for ioreq is failed\n");
@@ -252,7 +259,19 @@ void SSDsim_run_simulation()
 //        delay=callFsim(ioreq->blkno,ioreq->bcount,ioreq->operation);
         delay=CacheManage(ioreq->blkno,ioreq->bcount,ioreq->operation);
         SSDsim->simtime+=delay;
-        fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
+//        添加最大运行时间和最小运行时间,已经平均响应时间的计算
+        if(delay>Req_Max_Delay){
+            Req_Max_Delay=delay;
+        }
+        if(delay<Req_Min_Delay){
+            Req_Min_Delay=delay;
+        }
+        SumDelay+=delay;
+        Req_Count++;
+        Req_Ave_Delay=SumDelay/Req_Count;
+
+
+//        fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
     }
 }
 

@@ -575,6 +575,93 @@ double callFsim(unsigned int secno, int scount, int operation)
 }
 
 int ZJ_flag=0;
+int ShowCycle;
+int ShowCount;
+//上一次显示观测周期物理读写统计
+int LastPhReadCount;
+int LastPhWriteCount;
+//上一显示观测周期的缓冲区读写命中情况
+int LastReqCount;
+int LastHitCount;
+int LastReqReadCount;
+int LastReqWriteCount;
+int LastReadHit;
+int LastWriteHit;
+int LastReadMiss;
+int LastWirteMiss;
+//上一观测周期内的缓冲区延迟情况
+double ShowAveDelay;
+//之后添加观测的底层写入放大系数w
+
+
+//初始化观测变量的初始化函数
+void InitShowVariable()
+{
+//   设置显示结果的周期
+    ShowCycle=1000;
+
+    ShowCount=0;
+
+    LastPhReadCount=0;
+    LastPhWriteCount=0;
+
+    LastHitCount=0;
+    LastWriteHit=0;
+    LastReqCount=0;
+    LastReadHit=0;
+    LastReadMiss=0;
+    LastWirteMiss=0;
+    LastWriteHit=0;
+    ShowAveDelay=0.0;
+
+}
+
+//根据ShowCount判断是否显示周期观测结构
+void UpdateAndShow()
+{
+    int CurrWriteHit,CurrWriteMiss,CurrReadMiss,CurrReadHit;
+    int CurrReqCount,CurrReqHit,CurrPhReadCount,CurrPhWriteCount;
+    double Curr_hit_rate,Read_hit_rate,Write_hit_rate;
+    if(ShowCount==ShowCycle){
+//        计算和显示
+        CurrReadHit=buffer_read_hit-LastReadHit;
+        CurrReadMiss=buffer_read_miss-LastReadMiss;
+        CurrWriteHit=buffer_write_hit-LastWriteHit;
+        CurrWriteMiss=buffer_miss_cnt-LastWirteMiss;
+        CurrReqCount=buffer_cnt-LastReqCount;
+
+        CurrReqHit=buffer_hit_cnt-LastHitCount;
+        Curr_hit_rate=(double)CurrReqHit/CurrReqCount;
+        LastReqReadCount=CurrReadHit+CurrReadMiss;
+        LastReqWriteCount=CurrWriteHit+CurrWriteMiss;
+        Read_hit_rate=(double)CurrReadHit/LastReqReadCount;
+        Write_hit_rate=(double)CurrWriteHit/LastReqWriteCount;
+
+//                               显示
+//                          总体命中率显示
+        printf("==========================CycleCount  %d=====================\n",ShowCycle);
+        printf("Const Cycle ReqCount is %d\t hit rate is %lf\n",CurrReqCount,Curr_hit_rate);
+        printf("-------------------------------------------------------------\n");
+        printf("Const Cycle Read Req Count is %d\t read hit rate is %lf\n",CurrReadHit+CurrReadMiss,Read_hit_rate);
+        printf("Const Cycle Write Req Count is %d\t write hit rate is %lf\n",CurrWriteHit+CurrWriteMiss,Write_hit_rate);
+        printf("Const Cycle Write Req Count is %d\t write hit rate is %lf\n",CurrWriteHit+CurrWriteMiss,Write_hit_rate);
+
+        printf("=============================================================\n");
+
+//        更新
+        LastReqCount=buffer_cnt;
+        LastHitCount=buffer_hit_cnt;
+        LastReadMiss=buffer_read_miss;
+        LastReadHit=buffer_hit_cnt;
+        LastWirteMiss=buffer_write_miss;
+        LastWriteHit=buffer_write_hit;
+
+        ShowCount=1;
+
+    }else{
+        ShowCount++;
+    }
+}
 
 double CacheManage(unsigned int secno,int scount,int operation)
 {
@@ -583,6 +670,11 @@ double CacheManage(unsigned int secno,int scount,int operation)
     unsigned int blkno;
     int HitIndex;
     int cnt=0;
+
+    if(ZJ_flag==0){
+        InitShowVariable();
+        ZJ_flag=1;
+    }
     //页对齐操作
     blkno=secno/4;
     bcount=(secno+scount-1)/4-(secno)/4+1;
@@ -605,5 +697,11 @@ double CacheManage(unsigned int secno,int scount,int operation)
     }
     cache_delay=calculate_delay_cache();
     delay=cache_delay+flash_delay;
+
+//    添加周期性地输出显示
+    UpdateAndShow();
+
+
+
     return delay;
 }
