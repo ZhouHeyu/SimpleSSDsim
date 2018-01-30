@@ -212,19 +212,21 @@ double BPLRU_DelCacheEntry(int ReqLPN,int Reqoperation)
     DelBlkNum=pVictim->BlkNum;
     extra_physical_read=PAGE_NUM_PER_BLK-DelSize;
     physical_read+=extra_physical_read;
-//    确定数据页再没缓冲区，没有先读入,读取操作
-    for (curr_LPN = PAGE_NUM_PER_BLK*DelBlkNum; curr_LPN < PAGE_NUM_PER_BLK*(DelBlkNum+1); curr_LPN++) {
-        flag=0;
-        for ( i = 0; i <DelSize ; ++i) {
-            if(curr_LPN==pVictim->list[i]){
-                flag=1;
-                break;
-            }
-        }
-        if(flag==0){
-            delay+=callFsim(curr_LPN*4,4,1);
-        }
-    }
+////    确定数据页再没缓冲区，没有先读入,读取操作
+//    for (curr_LPN = PAGE_NUM_PER_BLK*DelBlkNum; curr_LPN < PAGE_NUM_PER_BLK*(DelBlkNum+1); curr_LPN++) {
+//        flag=0;
+//        for ( i = 0; i <DelSize ; ++i) {
+//            if(curr_LPN==pVictim->list[i]){
+//                flag=1;
+//                break;
+//            }
+//        }
+//        if(flag==0){
+//            delay+=callFsim(curr_LPN*4,4,1);
+//        }
+//    }
+//    直接读取操作
+    delay+=extra_physical_read*READ_DELAY;
 //  整块回写
     physical_write+=PAGE_NUM_PER_BLK;
     delay+=callFsim(PAGE_NUM_PER_BLK*DelBlkNum*4,PAGE_NUM_PER_BLK*4,0);
