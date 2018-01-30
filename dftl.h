@@ -8,6 +8,8 @@
  * 
  */
 
+#ifndef SIMULATION_DFTL_H
+#define SIMULATION_DFTL_H
 #include "type.h"
 
 #define MAP_INVALID 1 
@@ -54,3 +56,5 @@ static int SYNC_NUM;
 
 sect_t opagemap_num;
 struct opm_entry *opagemap;
+
+#endif

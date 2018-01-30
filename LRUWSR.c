@@ -17,8 +17,13 @@ pNode FindCleanOrColdNode(pNode pHead){
     Victim=pHead->Pre;
     int count=0,L;
     L=GetListLength(pHead);
-    while((Victim->isD!=0 || Victim->isCold!=0)){
-//        进入循环的节点是dirty and hot
+    while( Victim->isCold!=1){
+//       确保所有的剔除的尾部的页都是冷页
+//        当然是干净页则直接剔除
+        if(Victim->isD==0){
+            break;
+        }
+
         Victim->isCold=1;
 //       选择上一个作为新的核实节点
         ps=Victim;
