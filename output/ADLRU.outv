@@ -6,22 +6,8 @@ flash_extrablocks= 65536
 cache-type :3 ------->AD-LRU alogrithm
 cache-size is 1024
 =================================================
+cache_type= 3
 ftl_type= 4
+CFLRU_alpha=0.500000
 *** I/O trace used: ../trace/synx
 Initialization complete
-simulation complete
-
-CACHE STATISTICS
-------------------------------------------------------------
-All buffer req count# 875017
-Buffer_Miss_Count # 502653	Hit rate is 0.425551
-Read Hit count is 372115	Write Hit count is 249
-Read Miss count is 370832	Write Miss count is 131821
-Physical Read Count is 502653	Physical Write Count is 130802
-------------------------------------------------------------
-
-FLASH STATISTICS
-------------------------------------------------------------
- Page read (#):   502653    Page write (#):   130802    Block erase (#):    40066
- GC page read (#):   592168    GC page write (#):   592168
-------------------------------------------------------------
