@@ -24,15 +24,15 @@ void Buffer_Stat_Print(FILE *outFP)
     fprintf(outFP, "\n");
     fprintf(outFP, "CACHE STATISTICS\n");
     fprintf(outFP, "------------------------------------------------------------\n");
-    fprintf(outFP,"All buffer req count# %d\n",buffer_cnt);
-    fprintf(outFP,"Buffer_Miss_Count # %d\t",buffer_miss_cnt);
-    fprintf(outFP,"Hit rate is %f\n",(double)(buffer_cnt-buffer_miss_cnt)/buffer_cnt);
-    fprintf(outFP,"Read Hit count is %d\t",buffer_read_hit);
-    fprintf(outFP,"Write Hit count is %d\n",buffer_write_hit);
-    fprintf(outFP,"Read Miss count is %d\t",buffer_read_miss);
-    fprintf(outFP,"Write Miss count is %d\n",buffer_write_miss);
-    fprintf(outFP,"Physical Read Count is %d\t",physical_read);
-    fprintf(outFP,"Physical Write Count is %d\n",physical_write);
+    fprintf(outFP,"All buffer req count(#) %d\n",buffer_cnt);
+    fprintf(outFP,"Buffer_Miss_Count (#) %d\t",buffer_miss_cnt);
+    fprintf(outFP,"Hit rate is (#)%f\n",(double)(buffer_cnt-buffer_miss_cnt)/buffer_cnt);
+    fprintf(outFP,"Read Hit count(#) is %d\t",buffer_read_hit);
+    fprintf(outFP,"Write Hit count is (#)%d\n",buffer_write_hit);
+    fprintf(outFP,"Read Miss count is (#)%d\t",buffer_read_miss);
+    fprintf(outFP,"Write Miss count is (#)%d\n",buffer_write_miss);
+    fprintf(outFP,"Physical Read Count (#)is %d\t",physical_read);
+    fprintf(outFP,"Physical Write Count(#) is %d\n",physical_write);
     fprintf(outFP, "------------------------------------------------------------\n");
 }
 

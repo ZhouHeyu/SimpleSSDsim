@@ -198,11 +198,11 @@ void SimulationTime_Stat_Print(FILE *outFP)
     fprintf(outFP, "\n");
     fprintf(outFP, "SIMULATION TIME STATISTICS\n");
     fprintf(outFP, "------------------------------------------------------------\n");
-    fprintf(outFP,"The I/O Simulation Time is(#) %lf\t     ",SimulationDelay);
-    fprintf(outFP,"The I/O Request Count is(#) %d\n     ",Req_Count);
-    fprintf(outFP,"The I/O Average Time is(#) %lf\t     ",Req_Ave_Delay);
-    fprintf(outFP,"The I/O Max Time is (#)  %lf\t       ",Req_Max_Delay);
-    fprintf(outFP,"The I/O Min Time is (#)  %lf\n       ",Req_Min_Delay);
+    fprintf(outFP,"The I/O Simulation Time is(#) %lf\t",SimulationDelay);
+    fprintf(outFP,"The I/O Request Count is(#) %d\n",Req_Count);
+    fprintf(outFP,"The I/O Average Time is(#) %lf\t",Req_Ave_Delay);
+    fprintf(outFP,"The I/O Max Time is (#)  %lf\n",Req_Max_Delay);
+    fprintf(outFP,"The I/O Min Time is (#)  %lf\n",Req_Min_Delay);
     fprintf(outFP, "------------------------------------------------------------\n");
 
 }
