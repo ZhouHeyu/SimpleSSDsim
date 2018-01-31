@@ -33,6 +33,10 @@ void InitGlobalVariable()
     CFLRU_alpha=0.5;
     CASA_Tau_Ratio=0.5;
     ADLRU_MIN_LC=0.2;
+
+//  初始化对应ADCT算法相关的默认初始化参数
+    ADCT_Cycle=cache_size;
+    ADCT_HotTh=1/2;
 }
 
 void SSDsim_loadparams(char *filename)

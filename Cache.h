@@ -36,6 +36,11 @@ void reset_cache_stat();
 double calculate_delay_cache();
 int calculate_arr_positive_num(int *arr,int size);
 
+//设置和ADCT算法相关的变量
+int ADCT_Cycle;
+//判断ADCT写队列前百分之几的数据页为热，为百分比数
+double ADCT_HotTh;
+
 
 
 #endif //SIMULATION_CACHE_H
