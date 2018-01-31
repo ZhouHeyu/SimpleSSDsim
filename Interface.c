@@ -192,11 +192,28 @@ void initFlash()
     Buffer_Stat_Reset();
 }
 
+//指定运行的时间输出
+void SimulationTime_Stat_Print(FILE *outFP)
+{
+    fprintf(outFP, "\n");
+    fprintf(outFP, "SIMULATION TIME STATISTICS\n");
+    fprintf(outFP, "------------------------------------------------------------\n");
+    fprintf(outFP,"The I/O Simulation Time is(#) %lf\t     ",SimulationDelay);
+    fprintf(outFP,"The I/O Request Count is(#) %d\n     ",Req_Count);
+    fprintf(outFP,"The I/O Average Time is(#) %lf\t     ",Req_Ave_Delay);
+    fprintf(outFP,"The I/O Max Time is (#)  %lf\t       ",Req_Max_Delay);
+    fprintf(outFP,"The I/O Min Time is (#)  %lf\n       ",Req_Min_Delay);
+    fprintf(outFP, "------------------------------------------------------------\n");
+
+}
+
 //初始化对应的要释放内存段
 void endFlash()
 {
     Buffer_Stat_Print(outputfile);
     nand_stat_print(outputfile);
+//   关于输出的运行时间跟选择的FTL和cache算法的类型都相关,因此在这插入运行时间的输出
+    SimulationTime_Stat_Print(outputfile);
     ftl_op->end();
     cache_op->end();
     nand_end();
@@ -634,8 +651,8 @@ void UpdateAndShow()
         Curr_hit_rate=(double)CurrReqHit/CurrReqCount;
         LastReqReadCount=CurrReadHit+CurrReadMiss;
         LastReqWriteCount=CurrWriteHit+CurrWriteMiss;
-        Read_hit_rate=(double)CurrReadHit/LastReqReadCount;
-        Write_hit_rate=(double)CurrWriteHit/LastReqWriteCount;
+        Read_hit_rate=((double)CurrReadHit)/LastReqReadCount;
+        Write_hit_rate=((double)CurrWriteHit)/LastReqWriteCount;
 
 //                               显示
 //                          总体命中率显示

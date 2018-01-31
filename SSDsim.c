@@ -237,7 +237,7 @@ void SSDsim_run_simulation()
     Req_Min_Delay=99999999;
     Req_Ave_Delay=0;
     Req_Count=0;
-    double SumDelay=0.0;
+    SimulationDelay=0.0;
 
     ioreq=(ioreq_event *)malloc(sizeof(ioreq_event));
     if(ioreq==NULL){
@@ -266,9 +266,9 @@ void SSDsim_run_simulation()
         if(delay<Req_Min_Delay){
             Req_Min_Delay=delay;
         }
-        SumDelay+=delay;
+        SimulationDelay+=delay;
         Req_Count++;
-        Req_Ave_Delay=SumDelay/Req_Count;
+        Req_Ave_Delay=SimulationDelay/Req_Count;
 
 
 //        fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
