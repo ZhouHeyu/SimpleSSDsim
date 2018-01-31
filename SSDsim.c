@@ -28,6 +28,7 @@ void InitGlobalVariable()
     flash_extrblocks=65536;
     cache_type=1;
     cache_size=1024;
+    map_cache_size=1024;
     ftl_type=4;
     CFLRU_alpha=0.5;
     CASA_Tau_Ratio=0.5;
@@ -188,8 +189,35 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
     }
     fprintf(outputfile,"=================================================\n");
     fflush(outputfile);
-    fprintf(outputfile,"ftl_type= %d\n",ftl_type);
+//   同时也添加针对FTL算法的选择的提示
+    fprintf(outputfile,"\n");
     fflush(outputfile);
+    fprintf(outputfile,"=================================================\n");
+    switch (ftl_type){
+        case 1:
+            fprintf(outputfile,"ftl_type= %d -------------> pagemap FTL\n",ftl_type);
+            fprintf(outputfile,"(目前没有参考作用的参数)map cache size is %d\n",map_cache_size);
+            fflush(outputfile);
+            break;
+        case 2:
+            fprintf(outputfile,"ftl_type= %d -------------> blockmap FTL\n",ftl_type);
+            fprintf(outputfile,"(目前没有参考作用的参数)map cache size is %d\n",map_cache_size);
+            fflush(outputfile);
+            break;
+        case 3:
+            fprintf(outputfile,"ftl_type= %d -------------> DFTL(opagemap)\n",ftl_type);
+            fprintf(outputfile,"(目前没有参考作用的参数)map cache size is %d\n",map_cache_size);
+            fflush(outputfile);
+            break;
+        case 4:
+            fprintf(outputfile,"ftl_type= %d ------------->  FATL\n",ftl_type);
+            fprintf(outputfile,"(目前没有参考作用的参数)map cache size is %d\n",map_cache_size);
+            fflush(outputfile);
+            break;
+    }
+    fprintf(outputfile,"=================================================\n");
+    fflush(outputfile);
+
     //加载仿真的负载文件
     SSDsim_setup_iotracefile(argv[3]);
     fprintf (outputfile, "*** I/O trace used: %s\n", argv[3]);
@@ -232,6 +260,13 @@ void SSDsim_cleanup_and_printstats()
 void SSDsim_run_simulation()
 {
     double delay=0.0;
+//    关于最小最大IO请求时间统计
+    Req_Max_Delay=0.0;
+    Req_Min_Delay=99999999;
+    Req_Ave_Delay=0;
+    Req_Count=0;
+    SimulationDelay=0.0;
+
     ioreq=(ioreq_event *)malloc(sizeof(ioreq_event));
     if(ioreq==NULL){
         fprintf(stderr,"malloc for ioreq is failed\n");
@@ -252,7 +287,19 @@ void SSDsim_run_simulation()
 //        delay=callFsim(ioreq->blkno,ioreq->bcount,ioreq->operation);
         delay=CacheManage(ioreq->blkno,ioreq->bcount,ioreq->operation);
         SSDsim->simtime+=delay;
-        fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
+//        添加最大运行时间和最小运行时间,已经平均响应时间的计算
+        if(delay>Req_Max_Delay){
+            Req_Max_Delay=delay;
+        }
+        if(delay<Req_Min_Delay){
+            Req_Min_Delay=delay;
+        }
+        SimulationDelay+=delay;
+        Req_Count++;
+        Req_Ave_Delay=SimulationDelay/Req_Count;
+
+
+//        fprintf(stdout,"LPN-%d Size-%d flag-%d \ttime is %lf\n",ioreq->blkno,ioreq->bcount,ioreq->operation,delay);
     }
 }
 

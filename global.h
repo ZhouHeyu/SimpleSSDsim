@@ -71,13 +71,25 @@ int flash_extrblocks;
 int cache_type;
 int ftl_type;
 int cache_size;
+int map_cache_size;
 //关于CFLRU的参数配置
 double CFLRU_alpha;
 //关于初始化CASA的Tau值比例,默认是0.5
 double CASA_Tau_Ratio;
 //关于AD-LRU算法的最小冷区比例,默认是0.2;
 double ADLRU_MIN_LC;
+double SimulationDelay;
+//每个I/O请求最大运行时间
+double Req_Max_Delay;
+double Req_Min_Delay;
+//平均每个I/O请求的响应时间
+double Req_Ave_Delay;
+int Req_Count;
 
+//缓冲区针对flash读写请求引发的时延
+double Flash_Min_Delay;
+double Flash_Max_Delay;
+double Flash_Ave_Delay;
 
 //...............这里可以扩展添加之后的参数
 
