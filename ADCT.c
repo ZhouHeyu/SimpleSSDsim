@@ -160,6 +160,14 @@ int ADCT_Search(int LPN,int operation)
 //Hit_index表示命中的队列类型
 int ADCT_HitCache (int LPN,int operation,int Hit_kindex)
 {
+    if(Hit_kindex==0){
+//      命中CLRU的操作
+    }else if(Hit_kindex==1){
+
+    }else{
+        fprintf(stderr,"ADCT Hit Cache error !!\n");
+        assert(0);
+    }
   return 0;
 }
 
