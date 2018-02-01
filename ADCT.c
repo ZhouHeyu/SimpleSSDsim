@@ -62,7 +62,169 @@ int ADCT_UpdateTau(int lastTau)
     return Tau;
 }
 
+void HitCLRU(int LPN,int operation)
+{
+    int HitIndex,tempBlkNum;
+    int victim=-1;
+    int free_pos=-1,NewIndex;
+    int i;
+    //首先更新对应的NandPage的age状态,之后别忘了更新其他的状态
+    ADCTNandPage[LPN].cache_age=ADCTNandPage[cache_max_index].cache_age+1;
+    cache_max_index=LPN;
+    //从CLRU的数组中找到存放LPN的位置
+    HitIndex=search_table(clru_cache_arr,ADCT_MAX_CACHE_SIZE,LPN);
+    //错误判读
+    if(HitIndex==-1){
+        printf("error happend in HitCLRU :can not Find LPN %d in clru_cache_arr\n",LPN);
+        assert(0);
+    }
 
+    //根据命中的类型（写需要移动到DLRU队列中去，更复杂）
+    if(operation!=0){
+        //读命中,不需要移动数据项
+        CDHit_CRH++;
+        buffer_read_hit++;
+        cache_read_num++;
+    }else{
+        //写命中，需要移动数据项
+        CDHit_CWH++;
+        buffer_write_hit++;
+        cache_write_num++;
+        //删除clru_cache中的数据
+        clru_cache_arr[HitIndex]=-1;
+        ADCT_CLRU_CACHE_SIZE--;
+        //将其存入DLRU队列
+        free_pos=find_free_pos(dlru_cache_arr,ADCT_MAX_CACHE_SIZE);
+        if(free_pos==-1){
+            printf("error happen in HitCLRU, can not find free_pos in dlr-cache-arr\n");
+            exit(-1);
+        }
+        dlru_cache_arr[free_pos]=LPN;
+        ADCT_DLRU_CACHE_SIZE++;
+        //更新NandPage的标志位
+        ADCTNandPage[LPN].cache_status=CACHE_INDLRU;
+        ADCTNandPage[LPN].cache_update=1;
+
+        //更新块索引的数据
+        tempBlkNum=LPN/PAGE_NUM_PER_BLK;
+        //删除对应clist上的索引(HitIndex)，将新的dlru位置索引(free_pos)加入dlist
+        victim=search_table(BlkTable[tempBlkNum].Clist,PAGE_NUM_PER_BLK,HitIndex);
+        //错误检测
+        if(victim==-1){
+            printf("error happend in HitInCLRU can not find HitIndex:%d In BLkTable[%d]-Clist\n",HitIndex,tempBlkNum);
+            printf("the Clist Num is %d\t CleanNum is %d\n",CL,BlkTable[tempBlkNum].CleanNum);
+            //依次打印输出当前的Clist的队列的值
+            for(i=0;i<PAGE_NUM_PER_BLK;i++){
+                if(BlkTable[tempBlkNum].Clist[i]!=-1){
+                    printf("%d\t",BlkTable[tempBlkNum].Clist[i]);
+                }
+            }
+            assert(0);
+        }
+        BlkTable[tempBlkNum].Clist[victim]=-1;
+        BlkTable[tempBlkNum].CleanNum--;
+
+        NewIndex=free_pos;//NewIndex是之前dlru_cache_arr的位置索引
+        free_pos=find_free_pos(BlkTable[tempBlkNum].Dlist,PAGE_NUM_PER_BLK);
+        //错误检测
+        if(free_pos==-1){
+            printf("error happend in HitCLRU can not find free_pos in BLKTable[%d]-Dlist for NewIndex %d\n",tempBlkNum,NewIndex);
+            printf("the Dlist Num is %d\t DirtyNum is %d\n",DL,BlkTable[tempBlkNum].DirtyNum);
+            //依次打印输出当前的Dlist的队列的值
+            for(i=0;i<PAGE_NUM_PER_BLK;i++){
+                if(BlkTable[tempBlkNum].Dlist[i]!=-1){
+                    printf("%d\n",BlkTable[tempBlkNum].Dlist[i]);
+                }
+            }
+            exit(-1);
+        }
+        BlkTable[tempBlkNum].Dlist[free_pos]=NewIndex;
+        BlkTable[tempBlkNum].DirtyNum++;
+        //错误检测需要的值
+        int CL=calculate_arr_positive_num(BlkTable[tempBlkNum].Clist,PAGE_NUM_PER_BLK);
+        int DL=calculate_arr_positive_num(BlkTable[tempBlkNum].Dlist,PAGE_NUM_PER_BLK);
+//        做一个错误检测判断CL和DL是否一直一致
+        if(CL!=BlkTable[tempBlkNum].CleanNum||DL!=BlkTable[tempBlkNum].DirtyNum){
+            printf("error happend in HitCLRU,Clist or Dlist size is error\n");
+            printf("the Dlist Num is %d\t DirtyNum is %d\n",DL,BlkTable[tempBlkNum].DirtyNum);
+            printf("the Clist Num is %d\t CleanNum is %d\n",CL,BlkTable[tempBlkNum].CleanNum);
+            exit(-1);
+        }
+    }
+
+}
+
+
+//命中DLRU的操作
+void HitDLRU(int LPN,int operation)
+{
+    //更新对应的NandPage的状态标识
+    ADCTNandPage[LPN].cache_age=ADCTNandPage[cache_max_index].cache_age+1;
+    cache_max_index=LPN;
+    if(operation==0){
+        CDHit_DWH++;
+        cache_write_num++;
+        buffer_write_hit++;
+    }else{
+        CDHit_DRH++;
+        cache_read_num++;
+        buffer_read_hit++;
+    }
+}
+
+
+//删除CLRU的lru位置的数据项
+void DelLPNInCLRU()
+{
+    int MinAgeLPN,Victim;
+    //BlkTable删除需要的中间变量
+    int ClistVictim,ClistIndex;
+    int tempBlkNum;
+
+    //注意这里返回的是LPN号,不是位置索引
+    MinAgeLPN=my_find_cache_min(clru_cache_arr,CACHE_MAX_ENTRIES);
+    //重置NandPage相关的状态
+    ResetNandPageStat(MinAgeLPN);
+    Victim=search_table(clru_cache_arr,CACHE_MAX_ENTRIES,MinAgeLPN);
+    //错误检测
+    if(Victim==-1){
+        printf("error happend in DelLPNInCLRU: can not find MinAgeLPN %d In clru-cache-arr\n",MinAgeLPN);
+        exit(1);
+    }
+    //删除clru中的数据
+    clru_cache_arr[Victim]=-1;
+    CACHE_CLRU_NUM_ENTRIES--;
+    //删除对应的LPN的块索引
+    tempBlkNum=MinAgeLPN/PAGE_NUM_PER_BLK;
+//    遍历找到对应删除的MinAgeLPN(LPN)-->Victim(ClistVictim)在Clist上的位置(ClistIndex)
+    ClistVictim=Victim;
+    ClistIndex=search_table(BlkTable[tempBlkNum].Clist,PAGE_NUM_PER_BLK,ClistVictim);
+    //错误检测
+    if(ClistIndex==-1){
+        printf("error happend in DelLPNInCLRU: can not find ClistVictim %d In BlkTable[%d]-Clist\n",ClistVictim,tempBlkNum);
+        exit(1);
+    }
+    //删除对应的数据项
+    BlkTable[tempBlkNum].Clist[ClistIndex]=-1;
+    //对应的统计量的修改
+    BlkTable[tempBlkNum].BlkSize--;
+    BlkTable[tempBlkNum].CleanNum--;
+    //错误检测
+    if(BlkTable[tempBlkNum].CleanNum+BlkTable[tempBlkNum].DirtyNum!=BlkTable[tempBlkNum].BlkSize){
+        printf("error happend in DelLPNinCLRU: BlkTableSize is error\n");
+        printf("BlkTable[%d]-CleanNum is %d\t DirtyNum is %d\t BlkSize is %d\n",tempBlkNum,BlkTable[tempBlkNum].CleanNum,BlkTable[tempBlkNum].DirtyNum,BlkTable[tempBlkNum].BlkSize);
+        printf("Clist-num is %d\t Dlist num is %d\n",calculate_arr_positive_num(BlkTable[tempBlkNum].Clist,PAGE_NUM_PER_BLK),calculate_arr_positive_num(BlkTable[tempBlkNum].Dlist,PAGE_NUM_PER_BLK));
+        exit(-1);
+    }
+    //错误检测
+    if(BlkTable[tempBlkNum].CleanNum!=calculate_arr_positive_num(BlkTable[tempBlkNum].Clist,PAGE_NUM_PER_BLK)){
+        printf("error happend in DelLPNinCLRU:Clist size is error\n");
+        printf("BlkTable[%d]-CleanNum is %d\t Clist-num is %d\n",tempBlkNum,BlkTable[tempBlkNum].CleanNum,calculate_arr_positive_num(BlkTable[tempBlkNum].Clist,PAGE_NUM_PER_BLK));
+        exit(-1);
+    }
+}
+
+/*************************************************************/
 
 int ADCT_init(int size, int DataBlk_Num)
 {
@@ -146,9 +308,9 @@ int ADCT_Search(int LPN,int operation)
 {
     int type;
 //   首先换算对应的块是不是在
-    if(ADCTNandPage[LPN].cache_status==CLRU_VALID){
+    if(ADCTNandPage[LPN].cache_status==CACHE_INCLRU){
         type=0;
-    }else if(ADCTNandPage[LPN].cache_status==DLRU_VALID){
+    }else if(ADCTNandPage[LPN].cache_status==CACHE_INDLRU){
         type=1;
     }else{
         type=-1;
@@ -157,13 +319,18 @@ int ADCT_Search(int LPN,int operation)
     return type;
 }
 
+
+
 //Hit_index表示命中的队列类型
 int ADCT_HitCache (int LPN,int operation,int Hit_kindex)
 {
+//  统计命中次数
+    buffer_hit_cnt++;
     if(Hit_kindex==0){
 //      命中CLRU的操作
+        HitCLRU(LPN,operation);
     }else if(Hit_kindex==1){
-
+        HitDLRU(LPN,operation);
     }else{
         fprintf(stderr,"ADCT Hit Cache error !!\n");
         assert(0);
@@ -171,15 +338,39 @@ int ADCT_HitCache (int LPN,int operation,int Hit_kindex)
   return 0;
 }
 
+
+
 double ADCT_AddCacheEntry(int LPN,int operation)
 {
-    double delay;
+    double delay=0.0;
     return delay;
 }
 
+
+//判断当前缓冲区是否溢出
 double ADCT_DelCacheEntry(int ReqLPN,int ReqOperation)
 {
-    double delay;
+    double delay=0.0;
+    if(ADCT_CLRU_CACHE_SIZE+ADCT_DLRU_CACHE_SIZE<ADCT_MAX_CACHE_SIZE){
+        return delay;
+    }
+
+//  debug test
+    if(ADCT_CLRU_CACHE_SIZE!=calculate_arr_positive_num(clru_cache_arr,ADCT_MAX_CACHE_SIZE)||ADCT_DLRU_CACHE_SIZE!=calculate_arr_positive_num(dlru_cache_arr,ADCT_MAX_CACHE_SIZE)){
+        printf("ADCT_CLRU_CACHE_SIZE is %d\t clru-arr num is %d\n",ADCT_CLRU_CACHE_SIZE,calculate_arr_positive_num(clru_cache_arr,ADCT_MAX_CACHE_SIZE));
+        printf("ADCT_DLRU_CACHE_SIZE is %d\t dlru-arr num is %d\n",ADCT_DLRU_CACHE_SIZE,calculate_arr_positive_num(dlru_cache_arr,ADCT_MAX_CACHE_SIZE));
+        assert(0);
+    }
+    //根据Tau选择删除CLRU还是DLRU
+    if(ADCT_CLRU_CACHE_SIZE>=ADCT_Tau){
+//        选择删除CLRU,不涉及读写延迟
+        DelLPNInCLRU();
+    }else{
+//        涉及到回写操作，会有flash_delay的延迟
+        delay+=DelLPNInDLRU();
+    }
+
+
     return delay;
 }
 

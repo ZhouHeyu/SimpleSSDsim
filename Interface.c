@@ -339,39 +339,6 @@ void init_arr()
     }
 }
 
-int search_table(int *arr, int size, int val)
-{
-    int i;
-    for(i =0 ; i < size; i++) {
-        if(arr[i] == val) {
-            return i;
-        }
-    }
-
-    printf("shouldnt come here for search_table()=%d,%d",val,size);
-    for( i = 0; i < size; i++) {
-        if(arr[i] != -1) {
-            printf("arr[%d]=%d ",i,arr[i]);
-        }
-    }
-    exit(1);
-    return -1;
-}
-
-
-//针对arr数组中存放-1标识为无效数据
-int find_free_pos( int *arr, int size)
-{
-    int i;
-    for(i = 0 ; i < size; i++) {
-        if(arr[i] == -1) {
-            return i;
-        }
-    }
-//    printf("shouldnt come here for find_free_pos()");
-//    exit(1);
-    return -1;
-}
 
 //将数据插入到(int)arr数组指定的位置pos，pos之后的数据往后挪动一位
 int InsertArr(int *arr,int size,int data,int pos)
