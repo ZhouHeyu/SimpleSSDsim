@@ -126,21 +126,38 @@ int ADCT_init(int size, int DataBlk_Num)
 
 void  ADCT_end()
 {
-    free(dlru_cache_arr);
-    free(clru_cache_arr);
-
-
+    if(dlru_cache_arr==NULL) {
+        free(dlru_cache_arr);
+    }
+    if(clru_cache_arr==NULL){
+        free(clru_cache_arr);
+    }
+    if(BlkTable){
+        free(BlkTable);
+    }
+    if(ADCTNandPage==NULL){
+        free(ADCTNandPage);
+    }
 }
 
 
 //返回的是type=-1表示为命中，0表示命中读缓冲区，1表示命中写缓冲区
 int ADCT_Search(int LPN,int operation)
 {
-    int type=-1;
+    int type;
 //   首先换算对应的块是不是在
+    if(ADCTNandPage[LPN].cache_status==CLRU_VALID){
+        type=0;
+    }else if(ADCTNandPage[LPN].cache_status==DLRU_VALID){
+        type=1;
+    }else{
+        type=-1;
+    }
+
     return type;
 }
 
+//Hit_index表示命中的队列类型
 int ADCT_HitCache (int LPN,int operation,int Hit_kindex)
 {
   return 0;

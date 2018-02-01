@@ -13,6 +13,8 @@
 //和缓冲区相关的状态标识
 #define CACHE_INVALID 0
 #define CACHE_VALID 1
+#define CLRU_VALID 2
+#define DLRU_VALID 3
 
 //关于cache的读写统计 在对应的fast.c中的lm_init初始化
 int buffer_cnt;
