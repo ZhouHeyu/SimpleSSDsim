@@ -20,39 +20,6 @@ double cycle_flash_write_delay;
 
 
 
-//设置相应的块节点的链表操作
-pADBNode CreateBIndex()
-{
-    int i;
-    pADBNode pHead=(pADBNode)malloc(sizeof(ADBNode));
-    if (NULL==pHead){
-        printf("malloc for pBHead failed!\n");
-        exit(-1);
-    }
-    pHead->BlkNum=-1;
-    pHead->DirtyNum=0;
-    pHead->CleanNum=0;
-    pHead->Size=0;
-    pHead->Pre=pHead;
-    pHead->Next=pHead;
-    for ( i = 0; i <PAGE_NUM_PER_BLK ; ++i) {
-        pHead->CleanList[i]=-1;
-        pHead->DirtyList[i]=-1;
-    }
-    return pHead;
-}
-
-void FreeBList(pADBNode pHead)
-{
-    pADBNode ps,pt=pHead->Next;
-    while(pt!=pHead){
-        ps=pt;
-        pt=pt->Next;
-        free(ps);
-    }
-    free(pHead);
-}
-
 void ADCT_Stat_Reset()
 {
     //重置相应的周期统计变量
@@ -99,20 +66,59 @@ int ADCT_UpdateTau(int lastTau)
 
 int ADCT_init(int size, int DataBlk_Num)
 {
-    ADCT_CLRU_CACHE_SIZE=0;
-    ADCT_DLRU_CACHE_SIZE=0;
+    int i,j;
     ADCT_MAX_CACHE_SIZE=size;
+
+    ADCT_CLRU_CACHE_SIZE=0;
+    clru_cache_arr=(int *)malloc(sizeof(int)*size);
+    if(clru_cache_arr==NULL){
+        fprintf(stderr,"malloc for clru_cache_arr is failed!\n");
+        assert(0);
+    }
+//  快速初始化
+    memset(clru_cache_arr,0xFF, sizeof(int)*size);
+
+    ADCT_DLRU_CACHE_SIZE=0;
+    dlru_cache_arr=(int *)malloc(sizeof(int)*size);
+    if(dlru_cache_arr==NULL){
+        fprintf(stderr,"malloc for dlru_cache_arr is failed!\n");
+        assert(0);
+    }
+    memset(dlru_cache_arr,0xFF, sizeof(int)*size);
+
+//   初始化对应的页状态信息
+    ADCTPageNum=DataBlk_Num*PAGE_NUM_PER_BLK;
+    ADCTNandPage=(struct CachePageEntry *)malloc(sizeof(struct CachePageEntry)*ADCTPageNum);
+    if(ADCTNandPage==NULL){
+        printf("the create ADCT Nandpage Memeory is failed\n");
+        assert(0);
+    }
+// 初始化内存
+    for ( i = 0; i <ADCTPageNum ; ++i) {
+        ADCTNandPage[i].cache_status=0;
+        ADCTNandPage[i].cache_update=0;
+        ADCTNandPage[i].cache_age=0;
+    }
+
+    BlkTableNum=DataBlk_Num;
+    BlkTable=( struct BlkTable_entry *)malloc(sizeof(struct  BlkTable_entry)*BlkTableNum);
+    if(BlkTable==NULL){
+        printf("the create ADCT Blktable is failed\n");
+        assert(0);
+    }
+//  初始化函数
+    for ( i = 0; i <BlkTableNum; ++i) {
+        BlkTable[i].BlkSize=0;
+        BlkTable[i].CleanNum=0;
+        BlkTable[i].DirtyNum=0;
+        for ( j = 0; j <PAGE_NUM_PER_BLK ; ++j) {
+            BlkTable[i].Clist[j]=-1;
+            BlkTable[i].Dlist[j]=-1;
+        }
+    }
 //  设置最小的界限
     MinTauRatio=0.1;
     MaxTauRatio=0.9;
-    ADCT_DHead=CreateList();
-    ADCT_CHead=CreateList();
-    ADCT_BLK_NUM=0;
-//   设置对应的头节点链表
-    ADCT_BHead=CreateBIndex();
-    ADCT_Stat_Reset();
-//   设置对应的热数据的判别大小和初始的大小Tau的大小,还有周期循环的ADCT_Cycle
-//   在SSDSim的参数默认函数中设置
     ADCT_Tau=size/2;
 
     return 0;
@@ -120,9 +126,10 @@ int ADCT_init(int size, int DataBlk_Num)
 
 void  ADCT_end()
 {
-    FreeList(ADCT_CHead);
-    FreeList(ADCT_DHead);
-    FreeBList(ADCT_BHead);
+    free(dlru_cache_arr);
+    free(clru_cache_arr);
+
+
 }
 
 

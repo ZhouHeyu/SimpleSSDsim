@@ -6,14 +6,11 @@
 #define SIMULATION_LRU_H
 
 #include "type.h"
+#include "Cache.h"
 struct cache_operation * LRU_op_setup();
 //定义相关的结构体
-struct LRU_Cache_entry{
-    int cache_status;
-    int cache_age;
-    int cache_update;
-};
-struct LRU_Cache_entry *LRUPage;
+
+struct CachePageEntry *LRUPage;
 unsigned int LRUPage_Num;//只表示总的数据页
 //定义当前的cache的age最小的索引
 int LRU_min_age_index;

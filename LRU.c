@@ -62,12 +62,12 @@ int LRU_init(int size, int DataBlk_Num)
         lru_cache_arr[i]=-1;
     }
     LRUPage_Num=DataBlk_Num*PAGE_NUM_PER_BLK;
-    LRUPage=(struct LRU_Cache_entry*)malloc(sizeof(struct LRU_Cache_entry)*LRUPage_Num);
+    LRUPage=(struct CachePageEntry*)malloc(sizeof(struct CachePageEntry)*LRUPage_Num);
     if(LRUPage==NULL){
         printf("the create LRUpage Memeory is failed\n");
         exit(1);
     }
-    memset(LRUPage,0xFF,sizeof(struct LRU_Cache_entry)*LRUPage_Num);
+    memset(LRUPage,0xFF,sizeof(struct CachePageEntry)*LRUPage_Num);
     for ( i = 0; i <LRUPage_Num ; ++i) {
         LRUPage[i].cache_age=0;
         LRUPage[i].cache_status=0;

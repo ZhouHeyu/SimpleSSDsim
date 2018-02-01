@@ -4,6 +4,8 @@
 
 #ifndef SIMULATION_CACHE_H
 #define SIMULATION_CACHE_H
+
+#include "flash.h"
 #include <stdio.h>
 //定义cache的读写延时
 #define CACHE_READ_DELAY 0.0005
@@ -41,6 +43,22 @@ int ADCT_Cycle;
 //判断ADCT写队列前百分之几的数据页为热，为百分比数
 double ADCT_HotTh;
 
+
+//设置和块级缓冲区相关的结构体
+struct BlkTable_entry{
+    int BlkSize;
+    int CleanNum;
+    int DirtyNum;
+    int Clist[PAGE_NUM_PER_BLK];
+    int Dlist[PAGE_NUM_PER_BLK];
+};
+
+//和页状态标识的相关页结构体
+struct CachePageEntry{
+    int cache_status;
+    int cache_age;
+    int cache_update;
+};
 
 
 #endif //SIMULATION_CACHE_H
