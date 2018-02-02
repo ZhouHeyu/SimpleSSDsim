@@ -89,6 +89,12 @@ void SSDsim_loadparams(char *filename)
                 if(0<temp&&temp<1) {
                     ADLRU_MIN_LC=temp;
                 }
+            }else if(strcmp(Stemp,"ADCT_Hot_Ratio")==0){
+                if(0<temp&&temp<1){
+                    ADCT_HotTh=temp;
+                }
+            }else if(strcmp(Stemp,"ADCTUpdateCyle")==0){
+                ADCTUpdateCycle=(int)temp;
             }
         }
     }
