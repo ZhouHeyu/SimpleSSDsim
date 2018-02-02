@@ -14,6 +14,7 @@
 #include "LRUWSR.h"
 #include "CCFLRU.h"
 #include "BPLRU.h"
+#include "ADCT.h"
 
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
@@ -182,6 +183,8 @@ void initFlash()
         case 7:cache_op=FAB_op_setup();break;
 //            BPLRU算法
         case 8:cache_op=BPLRU_op_setup();break;
+//            自适应回写动态阈值算法
+        case 9:cache_op=ADCT_op_setup();break;
 
     }
 

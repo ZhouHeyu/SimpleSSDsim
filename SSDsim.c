@@ -35,7 +35,7 @@ void InitGlobalVariable()
     ADLRU_MIN_LC=0.2;
 
 //  初始化对应ADCT算法相关的默认初始化参数
-    ADCT_Cycle=cache_size;
+    ADCTUpdateCycle=cache_size;
     ADCT_HotTh=1/2;
 }
 
@@ -168,6 +168,7 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
             break;
         case 3:
             fprintf(outputfile,"cache-type :%d ------->AD-LRU alogrithm\n",cache_type);
+            fprintf(outputfile,"the min list ratio is %lf\n",ADLRU_MIN_LC);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
             break;
         case 4:
@@ -188,6 +189,11 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
             break;
         case 8:
             fprintf(outputfile,"cache-type :%d ------->FAB alogrithm\n",cache_type);
+            fprintf(outputfile,"cache-size is %d\n",cache_size);
+            break;
+        case 9:
+            fprintf(outputfile,"cache-type :%d ------->ADCT (Adjust Double-list Cluster write) alogrithm\n",cache_type);
+            fprintf(outputfile,"Hot-ratio is %lf\t  Tau-Update Cycle is %d\n",ADCT_HotTh,ADCTUpdateCycle);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
             break;
     }
