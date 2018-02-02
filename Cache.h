@@ -43,9 +43,11 @@ int calculate_arr_positive_num(int *arr,int size);
 int search_table(int *arr, int size, int val);
 //寻找数组中(-1)的空闲位置
 int find_free_pos( int *arr, int size);
+//将数据插入到(int)arr数组指定的位置pos，pos之后的数据往后挪动一位
+int InsertArr(int *arr,int size,int data,int pos);
 
 //设置和ADCT算法相关的变量
-int ADCT_Cycle;
+int ADCTUpdateCycle;
 //判断ADCT写队列前百分之几的数据页为热，为百分比数
 double ADCT_HotTh;
 

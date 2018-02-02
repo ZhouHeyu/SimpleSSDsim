@@ -24,8 +24,7 @@ void find_real_min();
 int find_min_ghost_entry();
 int find_free_pos( int *arr, int size);
 double CacheManage(unsigned int secno,int scount,int operation);
-//将数据插入到(int)arr数组指定的位置pos，pos之后的数据往后挪动一位
-int InsertArr(int *arr,int size,int data,int pos);
+
 
 //输出运行仿真时间相关统计信息
 void SimulationTime_Stat_Print(FILE *outFP);
