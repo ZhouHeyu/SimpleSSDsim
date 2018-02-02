@@ -1,0 +1,38 @@
+
+*** Output file name: ../output/LRU.outv
+flash_numblocks= 2097152
+flash_extrablocks= 65536
+=================================================
+cache_type :1 -------> LRU alogrithm
+cache-size is 1024
+=================================================
+
+=================================================
+ftl_type= 4 ------------->  FATL
+(目前没有参考作用的参数)map cache size is 1024
+=================================================
+*** I/O trace used: ../trace/synx
+Initialization complete
+simulation complete
+
+CACHE STATISTICS
+------------------------------------------------------------
+All buffer req count(#) 875017
+Buffer_Miss_Count (#) 331697	Hit rate is (#)0.620925
+Read Hit count(#) is 543032	Write Hit count is (#)288
+Read Miss count is (#)199915	Write Miss count is (#)131782
+Physical Read Count (#)is 331697	Physical Write Count(#) is 131567
+------------------------------------------------------------
+
+FLASH STATISTICS
+------------------------------------------------------------
+ Page read (#):   331697    Page write (#):   131567    Block erase (#):    40196
+ GC page read (#):   595100    GC page write (#):   595100
+------------------------------------------------------------
+
+SIMULATION TIME STATISTICS
+------------------------------------------------------------
+The I/O Simulation Time is(#) 164799.474150	The I/O Request Count is(#) 200000
+The I/O Average Time is(#) 0.823997	The I/O Max Time is (#)  276.992700
+The I/O Min Time is (#)  0.000500
+------------------------------------------------------------

@@ -721,6 +721,7 @@ double ADCT_AddCacheEntry(int LPN,int operation)
     int free_pos=-1,dlru_index,clru_index;
     int tempBlkNum;
 
+    buffer_miss_cnt++;
     physical_read++;
     cycle_physical_read++;
     if (operation==0){

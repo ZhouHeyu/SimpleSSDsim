@@ -36,7 +36,7 @@ void InitGlobalVariable()
 
 //  初始化对应ADCT算法相关的默认初始化参数
     ADCTUpdateCycle=cache_size;
-    ADCT_HotTh=1/2;
+    ADCT_HotTh=0.5;
 }
 
 void SSDsim_loadparams(char *filename)

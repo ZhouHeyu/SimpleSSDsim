@@ -343,22 +343,6 @@ void init_arr()
 }
 
 
-//将数据插入到(int)arr数组指定的位置pos，pos之后的数据往后挪动一位
-int InsertArr(int *arr,int size,int data,int pos)
-{
-    int j;
-    //首先做一个错误检测
-    if(pos>=size&&pos<0){
-        printf("error happend in InsertArr: Insert-pos:%d over bound:0-%d",pos,size-1);
-        exit(-1);
-    }
-    for ( j = size-1; j >pos ; j--) {
-        arr[j]=arr[j-1];
-    }
-    //在pos的位置插入数据
-    arr[pos]=data;
-    return 0;
-}
 
 int youkim_flag=0;
 
@@ -630,7 +614,6 @@ void UpdateAndShow()
         printf("Const Cycle ReqCount is %d\t hit rate is %lf\n",CurrReqCount,Curr_hit_rate);
         printf("-------------------------------------------------------------\n");
         printf("Const Cycle Read Req Count is %d\t read hit rate is %lf\n",CurrReadHit+CurrReadMiss,Read_hit_rate);
-        printf("Const Cycle Write Req Count is %d\t write hit rate is %lf\n",CurrWriteHit+CurrWriteMiss,Write_hit_rate);
         printf("Const Cycle Write Req Count is %d\t write hit rate is %lf\n",CurrWriteHit+CurrWriteMiss,Write_hit_rate);
 
         printf("=============================================================\n");

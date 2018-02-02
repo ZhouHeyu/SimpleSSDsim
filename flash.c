@@ -83,8 +83,8 @@ void nand_stat_print(FILE *outFP)
   fprintf(outFP, " Page read (#): %8u   ", stat_read_num);
   fprintf(outFP, " Page write (#): %8u   ", stat_write_num);
   fprintf(outFP, " Block erase (#): %8u\n", stat_erase_num);
-//  fprintf(outFP, " OOREAD  %8u   ", stat_oob_read_num);
-//  fprintf(outFP, " OOWRITE %8u\n", stat_oob_write_num);
+  fprintf(outFP, " OOREAD  %8u   ", stat_oob_read_num);
+  fprintf(outFP, " OOWRITE %8u\n", stat_oob_write_num);
   fprintf(outFP, " GC page read (#): %8u   ", stat_gc_read_num);
   fprintf(outFP, " GC page write (#): %8u\n", stat_gc_write_num);
   fprintf(outFP, "------------------------------------------------------------\n");
