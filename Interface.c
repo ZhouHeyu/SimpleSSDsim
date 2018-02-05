@@ -14,6 +14,7 @@
 #include "LRUWSR.h"
 #include "CCFLRU.h"
 #include "BPLRU.h"
+iinclude "PUDLRU.h"
 
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
