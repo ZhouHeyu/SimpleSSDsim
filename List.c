@@ -19,6 +19,7 @@ pNode CreateList()
     pHead->isD=-1;
     pHead->Pre=pHead;
     pHead->Next=pHead;
+
     return pHead;
 }
 

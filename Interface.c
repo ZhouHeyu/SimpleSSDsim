@@ -14,7 +14,7 @@
 #include "LRUWSR.h"
 #include "CCFLRU.h"
 #include "BPLRU.h"
-iinclude "PUDLRU.h"
+#include "PUDLRU.h"
 
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
@@ -183,6 +183,8 @@ void initFlash()
         case 7:cache_op=FAB_op_setup();break;
 //            BPLRU算法
         case 8:cache_op=BPLRU_op_setup();break;
+
+        case 9:cache_op=PUDLRU_op_setup();break;
 
     }
 
