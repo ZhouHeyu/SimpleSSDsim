@@ -1,5 +1,0 @@
-flash_numblocks 2097152
-flash_extrablocks 65536
-cache_type 3
-cache_size 1024
-ftl_type 4

@@ -615,7 +615,8 @@ void UpdateAndShow()
         printf("-------------------------------------------------------------\n");
         printf("Const Cycle Read Req Count is %d\t read hit rate is %lf\n",CurrReadHit+CurrReadMiss,Read_hit_rate);
         printf("Const Cycle Write Req Count is %d\t write hit rate is %lf\n",CurrWriteHit+CurrWriteMiss,Write_hit_rate);
-
+        printf("-------------------------------------------------------------\n");
+        printf("const Cycle Physical write count is %d\t Physical read count is %d\n",CurrPhWriteCount,CurrPhReadCount);
         printf("=============================================================\n");
 
 //        更新
