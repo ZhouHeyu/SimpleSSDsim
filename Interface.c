@@ -554,6 +554,7 @@ int LastPhWriteCount;
 //上一显示观测周期的缓冲区读写命中情况
 int LastReqCount;
 int LastHitCount;
+int LastMissCount;
 int LastReqReadCount;
 int LastReqWriteCount;
 int LastReadHit;
@@ -577,13 +578,16 @@ void InitShowVariable()
     LastPhWriteCount=0;
 
     LastHitCount=0;
-    LastWriteHit=0;
-    LastReqCount=0;
+    LastMissCount=0;
+
     LastReadHit=0;
     LastReadMiss=0;
     LastWirteMiss=0;
     LastWriteHit=0;
+
     ShowAveDelay=0.0;
+
+
 
 }
 
@@ -591,17 +595,23 @@ void InitShowVariable()
 void UpdateAndShow()
 {
     int CurrWriteHit,CurrWriteMiss,CurrReadMiss,CurrReadHit;
-    int CurrReqCount,CurrReqHit,CurrPhReadCount,CurrPhWriteCount;
+    int CurrReqCount,CurrReqHit,CurrReqMiss,CurrPhReadCount,CurrPhWriteCount;
     double Curr_hit_rate,Read_hit_rate,Write_hit_rate;
     if(ShowCount==ShowCycle){
 //        计算和显示
         CurrReadHit=buffer_read_hit-LastReadHit;
         CurrReadMiss=buffer_read_miss-LastReadMiss;
         CurrWriteHit=buffer_write_hit-LastWriteHit;
-        CurrWriteMiss=buffer_miss_cnt-LastWirteMiss;
-        CurrReqCount=buffer_cnt-LastReqCount;
+        CurrWriteMiss=buffer_write_miss-LastWirteMiss;
 
+        CurrReqMiss=buffer_miss_cnt-LastMissCount;
+        CurrReqCount=buffer_cnt-LastReqCount;
         CurrReqHit=buffer_hit_cnt-LastHitCount;
+
+        CurrPhReadCount=physical_read-LastPhReadCount;
+        CurrPhWriteCount=physical_write-LastPhWriteCount;
+
+
         Curr_hit_rate=(double)CurrReqHit/CurrReqCount;
         LastReqReadCount=CurrReadHit+CurrReadMiss;
         LastReqWriteCount=CurrWriteHit+CurrWriteMiss;
@@ -617,15 +627,20 @@ void UpdateAndShow()
         printf("Const Cycle Write Req Count is %d\t write hit rate is %lf\n",CurrWriteHit+CurrWriteMiss,Write_hit_rate);
         printf("-------------------------------------------------------------\n");
         printf("const Cycle Physical write count is %d\t Physical read count is %d\n",CurrPhWriteCount,CurrPhReadCount);
-        printf("=============================================================\n");
+        printf("*****************************************************************\n");
 
 //        更新
         LastReqCount=buffer_cnt;
         LastHitCount=buffer_hit_cnt;
+        LastMissCount=buffer_miss_cnt;
+
         LastReadMiss=buffer_read_miss;
         LastReadHit=buffer_hit_cnt;
         LastWirteMiss=buffer_write_miss;
         LastWriteHit=buffer_write_hit;
+
+        LastPhWriteCount=physical_write;
+        LastPhReadCount=physical_read;
 
         ShowCount=1;
 
@@ -633,6 +648,8 @@ void UpdateAndShow()
         ShowCount++;
     }
 }
+
+
 
 double CacheManage(unsigned int secno,int scount,int operation)
 {
