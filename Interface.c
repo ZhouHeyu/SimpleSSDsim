@@ -252,7 +252,8 @@ void send_flash_request(int start_blk_no, int block_cnt, int operation, int mapd
     if((start_blk_no + block_cnt) >= total_util_sect_num){
         printf("start_blk_no: %d, block_cnt: %d, total_util_sect_num: %d\n",
                start_blk_no, block_cnt, total_util_sect_num);
-        exit(0);
+//        exit(0);
+        assert(0);
     }
 
     switch(operation){
