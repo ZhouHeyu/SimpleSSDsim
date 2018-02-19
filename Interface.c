@@ -597,6 +597,7 @@ void UpdateAndShow()
     int CurrWriteHit,CurrWriteMiss,CurrReadMiss,CurrReadHit;
     int CurrReqCount,CurrReqHit,CurrReqMiss,CurrPhReadCount,CurrPhWriteCount;
     double Curr_hit_rate,Read_hit_rate,Write_hit_rate;
+    int CurrReadCount,CurrWriteCount;
     if(ShowCount==ShowCycle){
 //        计算和显示
         CurrReadHit=buffer_read_hit-LastReadHit;
@@ -613,21 +614,24 @@ void UpdateAndShow()
 
 
         Curr_hit_rate=(double)CurrReqHit/CurrReqCount;
-        LastReqReadCount=CurrReadHit+CurrReadMiss;
-        LastReqWriteCount=CurrWriteHit+CurrWriteMiss;
-        Read_hit_rate=((double)CurrReadHit)/LastReqReadCount;
-        Write_hit_rate=((double)CurrWriteHit)/LastReqWriteCount;
+        CurrReadCount=CurrReadHit+CurrReadMiss;
+        CurrWriteCount=CurrWriteHit+CurrWriteMiss;
+
+
+        Read_hit_rate=((double)CurrReadHit)/CurrReadCount;
+        Write_hit_rate=((double)CurrWriteHit)/CurrWriteCount;
 
 //                               显示
 //                          总体命中率显示
         printf("==========================CycleCount  %d=====================\n",ShowCycle);
         printf("Const Cycle ReqCount is %d\t hit rate is %lf\n",CurrReqCount,Curr_hit_rate);
         printf("-------------------------------------------------------------\n");
-        printf("Const Cycle Read Req Count is %d\t read hit rate is %lf\n",CurrReadHit+CurrReadMiss,Read_hit_rate);
-        printf("Const Cycle Write Req Count is %d\t write hit rate is %lf\n",CurrWriteHit+CurrWriteMiss,Write_hit_rate);
+//        printf("Const Cycle Read Req Count is %d\t read hit rate is %lf\n",CurrReadHit+CurrReadMiss,Read_hit_rate);
+        printf("Const Cycle Read Req Count is %d\t Read Hit Count is %d\t Read hit rate is %lf\n",CurrReadCount,CurrReadHit,Read_hit_rate);
+        printf("Const Cycle Write Req Count is %d\t Write Hit Count is %d\twrite hit rate is %lf\n",CurrWriteCount,CurrWriteHit,Write_hit_rate);
         printf("-------------------------------------------------------------\n");
         printf("const Cycle Physical write count is %d\t Physical read count is %d\n",CurrPhWriteCount,CurrPhReadCount);
-        printf("*****************************************************************\n");
+        printf("*******************************************************************\n");
 
 //        更新
         LastReqCount=buffer_cnt;
@@ -635,7 +639,7 @@ void UpdateAndShow()
         LastMissCount=buffer_miss_cnt;
 
         LastReadMiss=buffer_read_miss;
-        LastReadHit=buffer_hit_cnt;
+        LastReadHit=buffer_read_hit;
         LastWirteMiss=buffer_write_miss;
         LastWriteHit=buffer_write_hit;
 

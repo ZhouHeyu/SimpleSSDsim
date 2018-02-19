@@ -190,11 +190,11 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
             fprintf(outputfile,"cache-size is %d\n",cache_size);
             break;
         case 7:
-            fprintf(outputfile,"cache-type :%d ------->BPLRU alogrithm\n",cache_type);
+            fprintf(outputfile,"cache-type :%d ------->FAB alogrithm\n",cache_type);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
             break;
         case 8:
-            fprintf(outputfile,"cache-type :%d ------->FAB alogrithm\n",cache_type);
+            fprintf(outputfile,"cache-type :%d ------->BPLRU alogrithm\n",cache_type);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
             break;
         case 9:
