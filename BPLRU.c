@@ -123,48 +123,52 @@ double BPLRU_AddCacheEntry(int LPN,int operation)
         physical_read++;
         delay+=callFsim(LPN*4,4,1);
     }
-    pHit=FindHitBlkNode(BPLRU_Head,LPN,&flag);
+//   只针对写请求才进行加载处理
+    if(0==operation){
+        pHit=FindHitBlkNode(BPLRU_Head,LPN,&flag);
 //    如果请求的块不存在
-    if(pHit==NULL){
-        pHit=(pBlkNode)malloc(sizeof(BlkNode));
         if(pHit==NULL){
-            fprintf(stderr,"error happened in BPLRU_AddCacheEntry:\n");
-            fprintf(stderr,"malloc for new blknode is failed\n");
-            assert(0);
-        }
+            pHit=(pBlkNode)malloc(sizeof(BlkNode));
+            if(pHit==NULL){
+                fprintf(stderr,"error happened in BPLRU_AddCacheEntry:\n");
+                fprintf(stderr,"malloc for new blknode is failed\n");
+                assert(0);
+            }
 //       初始化
-        pHit->BlkSize=1;
-        pHit->BlkNum=LPN/PAGE_NUM_PER_BLK;
-        for ( i = 0; i <PAGE_NUM_PER_BLK ; ++i) {
-            pHit->list[i]=-1;
-        }
-        free_pos=find_free_pos(pHit->list,PAGE_NUM_PER_BLK);
-        if(free_pos==-1){
-            fprintf(stderr,"error happened in BPLRU_AddCacheEntry:\n");
-            fprintf(stderr,"can not find free pos in list\n");
-            assert(0);
-        }
-        pHit->list[free_pos]=LPN;
-        BlkAddNewToMRU(BPLRU_Head,pHit);
-        BPLRU_CACHE_SIZE++;
-        BPLRU_BLK_NUM++;
-    }else{
+            pHit->BlkSize=1;
+            pHit->BlkNum=LPN/PAGE_NUM_PER_BLK;
+            for ( i = 0; i <PAGE_NUM_PER_BLK ; ++i) {
+                pHit->list[i]=-1;
+            }
+            free_pos=find_free_pos(pHit->list,PAGE_NUM_PER_BLK);
+            if(free_pos==-1){
+                fprintf(stderr,"error happened in BPLRU_AddCacheEntry:\n");
+                fprintf(stderr,"can not find free pos in list\n");
+                assert(0);
+            }
+            pHit->list[free_pos]=LPN;
+            BlkAddNewToMRU(BPLRU_Head,pHit);
+            BPLRU_CACHE_SIZE++;
+            BPLRU_BLK_NUM++;
+        }else{
 //        请求的块存在,找到块中的空余位置放置新的LPN
-        free_pos=find_free_pos(pHit->list,PAGE_NUM_PER_BLK);
-        if(free_pos==-1){
-            fprintf(stderr,"error happened in BPLRU_AddCacheEntry:\n");
-            fprintf(stderr,"can not find free pos in list\n");
-            assert(0);
+            free_pos=find_free_pos(pHit->list,PAGE_NUM_PER_BLK);
+            if(free_pos==-1){
+                fprintf(stderr,"error happened in BPLRU_AddCacheEntry:\n");
+                fprintf(stderr,"can not find free pos in list\n");
+                assert(0);
+            }
+            pHit->list[free_pos]=LPN;
+            pHit->BlkSize++;
+            BPLRU_CACHE_SIZE++;
+            BlkMoveToMRU(BPLRU_Head,pHit);
         }
-        pHit->list[free_pos]=LPN;
-        pHit->BlkSize++;
-        BPLRU_CACHE_SIZE++;
-        BlkMoveToMRU(BPLRU_Head,pHit);
-    }
 //    如果当前模式为顺序写模式,需要启用LRU补偿机制
-    if(Seq_flag==1){
-        BlkMoveToLRU(BPLRU_Head,pHit);
+        if(Seq_flag==1){
+            BlkMoveToLRU(BPLRU_Head,pHit);
+        }
     }
+
 
 //    test debug
     if(BPLRU_BLK_NUM!=GetBlkListLength(BPLRU_Head)){
