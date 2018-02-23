@@ -86,17 +86,21 @@ int BPLRU_HitCache(int LPN,int operation,int type)
         cache_write_num++;
     }
 
-//   计算命中的块
-    pHit=FindHitBlkNode(BPLRU_Head,LPN,&flag);
+//    仅当写命中才将块移动
+    if(operation==0){
+        //   计算命中的块
+        pHit=FindHitBlkNode(BPLRU_Head,LPN,&flag);
 
 //  根据当前的写入模式进行不同的操作
 //    顺序写模式
-    if(Seq_flag==1){
+        if(Seq_flag==1){
 //      启动块补偿机制,将命中的块移动到LRU位置
-        BlkMoveToLRU(BPLRU_Head,pHit);
-    }else{
+            BlkMoveToLRU(BPLRU_Head,pHit);
+        }else{
 //     非顺序写模式,将命中的块移动到MRU位置
-        BlkMoveToMRU(BPLRU_Head,pHit);
+            BlkMoveToMRU(BPLRU_Head,pHit);
+        }
+
     }
 
     return 0;
