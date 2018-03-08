@@ -852,11 +852,14 @@ size_t lm_write(sect_t lsn, sect_t size, int mapdir_flag)
 /********************* END **********************************/ 
 void lm_end()
 {
-  printf("switch_merge  : %d\n", merge_switch_num);
-  printf("partial_merge : %d\n", merge_partial_num);
-  printf("full_merge    : %d\n", merge_full_num);
+//  printf("switch_merge  : %d\n", merge_switch_num);
+//  printf("partial_merge : %d\n", merge_partial_num);
+//  printf("full_merge    : %d\n", merge_full_num);
+    fprintf(outputfile,"switch_merge  : %d\n", merge_switch_num);
+    fprintf(outputfile,"partial_merge : %d\n", merge_partial_num);
+    fprintf(outputfile,"full_merge    : %d\n", merge_full_num);
 
-  if ((BMT != NULL) || (PMT != NULL)) {
+    if ((BMT != NULL) || (PMT != NULL)) {
     free(BMT);
     free(PMT);
   }
