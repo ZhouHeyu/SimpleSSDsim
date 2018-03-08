@@ -261,6 +261,7 @@ void SSDsim_run_simulation()
 {
     double delay=0.0;
 //    关于最小最大IO请求时间统计
+
     Req_Max_Delay=0.0;
     Req_Min_Delay=99999999;
     Req_Ave_Delay=0;
