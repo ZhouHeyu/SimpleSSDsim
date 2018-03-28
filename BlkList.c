@@ -137,7 +137,8 @@ pBlkNode FindHitBlkNode(pBlkNode pHead,int LPN,int *Hit)
             }
         }
     }
-    (*Hit)= flag == 1 ? 1 : 0;
+    (*Hit)= flag == 1 ? 1 : -1;
+
     return  pBlk;
 }
 
