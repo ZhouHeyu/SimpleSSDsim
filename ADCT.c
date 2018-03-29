@@ -336,7 +336,7 @@ int ADCT_UpdateTau(int lastTau)
     TempTau=max(TempTau,MinTau);
     TempTau=min(TempTau,MaxTau);
     Tau=TempTau;
-    printf("Temp is %d\n",TempTau);
+//    printf("Temp is %d\n",TempTau);
     //重置相应的周期统计变量
     ADCT_Stat_Reset();
 
