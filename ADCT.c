@@ -316,16 +316,27 @@ int ADCT_UpdateTau(int lastTau)
     D_Tau=ADCT_MAX_CACHE_SIZE-lastTau;
 
     //如果从底层得到周期的读写时延
-    double ave_flash_read_delay=cycle_flash_read_delay/cycle_physical_read;
-    double ave_flash_write_delay=cycle_flash_write_delay/cycle_physical_write;
+    double ave_flash_read_delay,ave_flash_write_delay;
+    if(cycle_physical_read==0){
+        ave_flash_read_delay=0.0;
+    }else{
+        ave_flash_read_delay=cycle_flash_read_delay/cycle_physical_read;
+    }
+    if(cycle_physical_write==0){
+        ave_flash_write_delay=0.0;
+    }else{
+        ave_flash_write_delay=cycle_flash_write_delay/cycle_physical_write;
+    }
+
     B_CLRU=(CDHit_CRH*ave_flash_read_delay+CDHit_CWH*ave_flash_write_delay)/lastTau;
     B_DLRU=(CDHit_DRH*ave_flash_read_delay+CDHit_DWH*ave_flash_write_delay)/D_Tau;
 
     //四舍五入
     TempTau=(int)((B_CLRU/(B_CLRU+B_DLRU)*ADCT_MAX_CACHE_SIZE)+0.5);
-    TempTau=min(TempTau,MinTau);
-    TempTau=max(TempTau,MaxTau);
+    TempTau=max(TempTau,MinTau);
+    TempTau=min(TempTau,MaxTau);
     Tau=TempTau;
+    printf("Temp is %d\n",TempTau);
     //重置相应的周期统计变量
     ADCT_Stat_Reset();
 
