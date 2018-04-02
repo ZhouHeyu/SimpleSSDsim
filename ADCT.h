@@ -12,6 +12,7 @@ struct cache_operation * ADCT_op_setup();
 
 unsigned int ADCTPageNum;
 struct CachePageEntry *ADCTNandPage;
+
 //表示对应数据块的个数
 unsigned int BlkTableNum;
 struct  BlkTable_entry *BlkTable;
@@ -40,6 +41,11 @@ int TCount;
 //设置周期物理读写的次数和读写时延
 int cycle_physical_write;
 int cycle_physical_read;
+
+int ADCT_FW;
+int ADCT_BW;
+int last_flash_write;
+
 double cycle_flash_read_delay;
 double cycle_flash_write_delay;
 

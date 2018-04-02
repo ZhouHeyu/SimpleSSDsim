@@ -65,7 +65,7 @@ int LRU_init(int size, int DataBlk_Num)
     LRUPage=(struct CachePageEntry*)malloc(sizeof(struct CachePageEntry)*LRUPage_Num);
     if(LRUPage==NULL){
         printf("the create LRUpage Memeory is failed\n");
-        exit(1);
+        exit(0);
     }
     memset(LRUPage,0xFF,sizeof(struct CachePageEntry)*LRUPage_Num);
     for ( i = 0; i <LRUPage_Num ; ++i) {

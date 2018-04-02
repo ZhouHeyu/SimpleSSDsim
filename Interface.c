@@ -15,6 +15,7 @@
 #include "CCFLRU.h"
 #include "BPLRU.h"
 #include "ADCT.h"
+#include "HotDataAware.h"
 
 int old_merge_switch_num = 0;
 int old_merge_partial_num = 0;
@@ -185,6 +186,8 @@ void initFlash()
         case 8:cache_op=BPLRU_op_setup();break;
 //            自适应回写动态阈值算法
         case 9:cache_op=ADCT_op_setup();break;
+//          热数据识别的算法
+        case 10:cache_op=HotDateAware_op_setup();break;
 
     }
 

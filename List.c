@@ -275,3 +275,33 @@ pNode FindVictimNode_CleanFirst(pNode pHead)
 
     return Victim;
 }
+
+//YMB
+int GetCListLength(pNode pHead)
+{
+    int length=0;
+    pNode pt=pHead->Next;
+    while (pt!=pHead)
+    {
+        if(pt->isD==-1)
+        {
+            length++;
+        }
+        pt=pt->Next;
+    }
+    return length;
+}
+int GetDListLength(pNode pHead)
+{
+    int length=0;
+    pNode pt=pHead->Next;
+    while (pt!=pHead)
+    {
+        if(pt->isD!=-1)
+        {
+            length++;
+        }
+        pt=pt->Next;
+    }
+    return length;
+}

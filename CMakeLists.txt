@@ -3,7 +3,7 @@ project(simulation)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_FLAGS "-m32")
-set(CMAKE_SHARED_LINKER_FLAG "-m32")
+set(CMAKE_SHARED_LINKER_FLAG "-m32" "lm")
 
 add_executable(simulation
         main.c
@@ -16,4 +16,5 @@ add_executable(simulation
         type.h global.h SSDsim.c SSDsim.h Interface.c Interface.h Cache.c Cache.h LRU.c LRU.h  CFLRU.h CFLRU.c  List.c List.h
         CASA.c CASA.h BlkList.c BlkList.h FAB.c FAB.h
         ADLRU.h ADLRU.c BPLRU.c BPLRU.h
-        LRUWSR.c LRUWSR.h CCFLRU.c CCFLRU.h ADCT.c ADCT.h)
+        LRUWSR.c LRUWSR.h CCFLRU.c CCFLRU.h ADCT.c ADCT.h HotDataAware.c HotDataAware.h)
+target_link_libraries(simulation m)

@@ -5,6 +5,7 @@
 #include "ADCT.h"
 #include "global.h"
 #include "Interface.h"
+#include <math.h>
 #include "Cache.h"
 
 int ADCT_find_cache_max(const int *arr, int arrMaxSize)
@@ -132,7 +133,7 @@ double ClusterWriteToFlash(int BlkNum,int Alogrithm)
             ReqStart++;
         }
 //      开始连续重构回写
-        for (i = ReqStart; i < (BlkNum + 1) * PAGE_NUM_PER_BLK; ++i) {
+        for (i = ReqStart+1; i < (BlkNum + 1) * PAGE_NUM_PER_BLK; ++i) {
             //出现中断,考虑将积累的连续请求一次回写(前提有请求,reqSize!=0)
             if (ADCTNandPage[i].cache_status != CACHE_INDLRU) {
                 if (ReqSize != 0) {
@@ -337,6 +338,12 @@ int ADCT_UpdateTau(int lastTau)
     TempTau=min(TempTau,MaxTau);
     Tau=TempTau;
 //    printf("Temp is %d\n",TempTau);
+
+    //  更新对应的统计回写(flash)
+    int temp_write;
+    ADCT_BW=cycle_physical_write;
+    ADCT_FW=flash_write_num-last_flash_write;
+    last_flash_write=flash_write_num;
     //重置相应的周期统计变量
     ADCT_Stat_Reset();
 
@@ -591,8 +598,27 @@ double DelLPNInDLRU()
     KeepSize=FindKeepCluser(BlkTable[tempBlkNum].Dlist,BlkTable[tempBlkNum].DirtyNum,KeepCluser,VictimCluster,BoundAge);
     DelSize=BlkTable[tempBlkNum].DirtyNum;
     VictimSize=DelSize-KeepSize;
+
+//    嵌入自适应聚簇回写缓冲区算法代码:
+    int E=PAGE_NUM_PER_BLK-BlkTable[tempBlkNum].DirtyNum;
+    double F=1.0;
+    if(ADCT_BW!=0){
+         F=(double)ADCT_FW/ADCT_BW;
+    }else{
+        if(ADCT_FW!=0){F=(double)ADCT_FW/1;}
+    }
+    double Th=(double)PAGE_NUM_PER_BLK/(1+pow(2,2-F));
+
+//    printf("Th is %lf\n",Th);
+
+    if(E<=(int)Th){
+        delay=ClusterWriteToFlash(tempBlkNum,1);
+    }else{
+        delay=ClusterWriteToFlash(tempBlkNum,0);
+    }
+
     /****************计算回写的时间延迟***0:不启用页填充*********************************/
-    delay=ClusterWriteToFlash(tempBlkNum,0);
+//    delay=ClusterWriteToFlash(tempBlkNum,0);
     //注意更改NandPage的状态（回写后的）
     //更改对应的块索引
     MoveDLRUToCLRU(tempBlkNum,KeepCluser,KeepSize,VictimCluster,VictimSize);
@@ -660,7 +686,10 @@ int ADCT_init(int size, int DataBlk_Num)
     MinTauRatio=0.1;
     MaxTauRatio=0.9;
     ADCT_Tau=size/2;
-
+//  写入放大系数
+    ADCT_FW=0;
+    ADCT_BW=0;
+    last_flash_write=flash_write_num;
     return 0;
 }
 
@@ -802,7 +831,7 @@ double ADCT_AddCacheEntry(int LPN,int operation)
             printf("error happend in AddNewToBuffer: can not find free pos for clru_index %d in BlkTable[%d]-Clist\n",clru_index,tempBlkNum);
             assert(0);
         }
-        BlkTable[tempBlkNum].Clist[free_pos]=clru_index;
+        BlkTable[tempBlkNum].Clist[free_pos] = clru_index;
         /****************错误检测********************/
         if(BlkTable[tempBlkNum].CleanNum!=calculate_arr_positive_num(BlkTable[tempBlkNum].Clist,PAGE_NUM_PER_BLK)){
             printf("error happend in AddNewToBuffer:Clist size is error\n");
