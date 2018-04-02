@@ -14,7 +14,7 @@ double H_th1;//热度阈值
 double H_th2;//局部热度阈值
 double HotDataAware_Tau;//队列阈值
 
-typedef  struct hash_entry{
+struct hash_entry{
     int visit_count;
     int buf_state;
     int last_visit_time;

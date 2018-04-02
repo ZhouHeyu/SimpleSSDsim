@@ -57,13 +57,14 @@ int HotDateAware(int LPN, int operation)
     int flag=0;   //冷热标识  1:hot  0:cold
     int hash_count=0;  //H_th2  中记录存在哈希表中数据个数
     int hash_state1_count=0;
+    int i;
     if (hash_table[LPN%hash_size].visit_count!=0){
       // count != 0 说明存在缓冲区
         Hp=(hash_table[LPN%hash_size].visit_count)/((double)(t_sys-hash_table[LPN%hash_size].last_visit_time));
         if(Hp>H_th1) flag=1;
         else{
             /*--------------------H_th2 的局部性热值判断-----------------*/
-            for(int i=LPN-range_k;i<LPN+range_k;i++)
+            for( i=LPN-range_k;i<LPN+range_k;i++)
             {
                 if(hash_table[i%hash_size].visit_count!=0){
                     hash_count++;
@@ -94,11 +95,12 @@ void Update_Hash(int LPN,int flag)
     hash_table[index].visit_count+=1;
     hash_table[index].last_visit_time=t_sys; //t_update
     hash_table[index].buf_state=flag;
+    int i;
     if(flag==1)              //如果为一，表示有写入，则进行判断是否到达半衰
     {
         if(t_sys%half_time==0)  //=0 arvie half time
         {
-            for(int i=0;i<hash_size;i++)
+            for( i=0;i<hash_size;i++)
             {
                 //t_update与系统时间差超过half_time
                 if((hash_table[i].last_visit_time-t_sys)>=half_time)
@@ -118,9 +120,10 @@ int HotDateAware_init(int cache_size,int blk_num)
     CD_list=CreateList();
     CL=0;
     DL=0;
+    int i;
     HotDataAware_Cache_Num_Entry=0;
     HotDataAware_Cache_Max_Entry=cache_size;
-    hash_size=cache_size*2;
+    hash_size=HASH_SIZE;
     //C_list=CreateList();
     //D_list=CreateList();
     HotDataAware_Tau=cache_size/2;//队列阈值
@@ -129,7 +132,7 @@ int HotDateAware_init(int cache_size,int blk_num)
         fprintf(stderr,"malloc for hash table is failed!");
         assert(0);
     }
-    for(int i=0;i<hash_size;i++){
+    for( i=0;i<hash_size;i++){
             hash_table[i].buf_state=0;
             hash_table[i].last_visit_time=0;
             hash_table[i].visit_count=0;
@@ -139,10 +142,10 @@ int HotDateAware_init(int cache_size,int blk_num)
     t_sys=0;
     //hash_size=cache_size*2;
     Hp=0;//热度值
-    H_th1=0.5;//热度阈值
-    H_th2=0.5;//局部热度阈值
+    H_th1=HDA_Th1;//热度阈值
+    H_th2=HDA_Th2;//局部热度阈值
     //hash[3][hash_size];// 0:存count  1:存t_update  2:存Buf_State
-    range_k=20;
+    range_k=Range_K;
 
     half_time=1000;
     return 0;

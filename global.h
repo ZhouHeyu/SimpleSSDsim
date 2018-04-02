@@ -78,6 +78,13 @@ double CFLRU_alpha;
 double CASA_Tau_Ratio;
 //关于AD-LRU算法的最小冷区比例,默认是0.2;
 double ADLRU_MIN_LC;
+
+//HDA算法相关的阈值比较
+double HDA_Th1;
+double HDA_Th2;
+int HASH_SIZE;
+int Range_K;
+
 double SimulationDelay;
 //每个I/O请求最大运行时间
 double Req_Max_Delay;

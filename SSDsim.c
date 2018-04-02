@@ -37,6 +37,11 @@ void InitGlobalVariable()
 //  初始化对应ADCT算法相关的默认初始化参数
     ADCTUpdateCycle=cache_size;
     ADCT_HotTh=0.5;
+//   初始化HDA算法相关的参数
+    HDA_Th1=0.5;
+    HDA_Th2=0.5;
+    HASH_SIZE=cache_size;
+    Range_K=50;
 }
 
 void SSDsim_loadparams(char *filename)
@@ -95,6 +100,18 @@ void SSDsim_loadparams(char *filename)
                 }
             }else if(strcmp(Stemp,"ADCTUpdateCyle")==0){
                 ADCTUpdateCycle=(int)temp;
+            }else if(strcmp(Stemp,"hash-size")==0){
+                HASH_SIZE=(int)temp;
+            }else if(strcmp(Stemp,"HDA_th1")==0){
+                if(0<temp&&temp<1){
+                    HDA_Th1=temp;
+                }
+            }else if(strcmp(Stemp,"HDA_th2")==0){
+                if(0<temp&&temp<1){
+                    HDA_Th1=temp;
+                }
+            }else if(strcmp(Stemp,"Range_K")==0){
+                Range_K=temp;
             }
         }
     }
@@ -201,6 +218,14 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
             fprintf(outputfile,"cache-type :%d ------->ADCT (Adjust Double-list Cluster write) alogrithm\n",cache_type);
             fprintf(outputfile,"Hot-ratio is %lf\t  HotDataAware_Tau-Update Cycle is %d\n",ADCT_HotTh,ADCTUpdateCycle);
             fprintf(outputfile,"cache-size is %d\n",cache_size);
+            break;
+        case 10:
+            fprintf(outputfile,"cache-type:%d---------->HotDataAware alogrithm\n",cache_type);
+            fprintf(outputfile,"cache_size is %d\n",cache_size);
+            fprintf(outputfile,"Hot_threshold one is %lf\n",HDA_Th1);
+            fprintf(outputfile,"Hot_threshold second is %lf\n",HDA_Th2);
+            fprintf(outputfile,"HASH_SIZE is %d\n",HASH_SIZE);
+            fprintf(outputfile,'RangK is %d\n"',Range_K);
             break;
     }
     fprintf(outputfile,"=================================================\n");
