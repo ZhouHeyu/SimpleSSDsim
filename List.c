@@ -63,6 +63,34 @@ int GetListLength(pNode pHead)
     return length;
 }
 
+int GetCListLength(pNode pHead)
+{
+    int length=0;
+    pNode pt=pHead->Next;
+    while (pt!=pHead)
+    {
+        if(pt->isD==-1)
+        {
+            length++;
+        }
+        pt=pt->Next;
+    }
+    return length;
+}
+int GetDListLength(pNode pHead)
+{
+    int length=0;
+    pNode pt=pHead->Next;
+    while (pt!=pHead)
+    {
+        if(pt->isD!=-1)
+        {
+            length++;
+        }
+        pt=pt->Next;
+    }
+    return length;
+}
 //从链表中找到特定的LPN值，并返回节点的指针位置,如果不存在返回NULL
 pNode FindLPNinList(pNode pHead,int LPN)
 {
