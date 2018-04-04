@@ -522,7 +522,7 @@ double DelLPNInDLRU()
 {
     double delay=0.0,temp_delay=0.0;
     int i,j,k,InsertFLag;
-    int MinAgeIndex=-1,MinAge=9999999;
+    int MinAgeIndex=-1,MinAge=2147483647;
     //要删除的LPN(尾部的LPN)
     int LRUVictim,tempBlkNum;
     //聚簇要删除的冷页和要保留的热脏页(dlru_cache_arr的位置索引)
@@ -596,6 +596,21 @@ double DelLPNInDLRU()
     LRUVictim=ADCT_dlru_cache_arr[MinAgeIndex];
     tempBlkNum=LRUVictim/PAGE_NUM_PER_BLK;
     KeepSize=FindKeepCluser(BlkTable[tempBlkNum].Dlist,BlkTable[tempBlkNum].DirtyNum,KeepCluser,VictimCluster,BoundAge);
+
+//    debug
+    if(MinAgeIndex==-1){
+        fprintf(stderr,"当前最小操作时间%d\n",DescendIndex[ADCT_DLRU_CACHE_SIZE-1]);
+        fprintf(stderr,"当前初始时MinAge　%d\n",MinAge);
+        exit(0);
+    }
+
+
+
+    if(calculate_arr_positive_num(VictimCluster,PAGE_NUM_PER_BLK)==0){
+        printf("error!!!");
+    }
+//    debug
+
     DelSize=BlkTable[tempBlkNum].DirtyNum;
     VictimSize=DelSize-KeepSize;
 
@@ -852,6 +867,12 @@ double ADCT_DelCacheEntry(int ReqLPN,int ReqOperation)
     if(ADCT_CLRU_CACHE_SIZE+ADCT_DLRU_CACHE_SIZE<ADCT_MAX_CACHE_SIZE){
         return delay;
     }
+//    debug
+    if(ADCT_CLRU_CACHE_SIZE+ADCT_DLRU_CACHE_SIZE>ADCT_MAX_CACHE_SIZE){
+        printf("error\n");
+        exit(0);
+    }
+//    debug
 
 //  debug test
     if(ADCT_CLRU_CACHE_SIZE!=calculate_arr_positive_num(ADCT_clru_cache_arr,ADCT_MAX_CACHE_SIZE)||ADCT_DLRU_CACHE_SIZE!=calculate_arr_positive_num(ADCT_dlru_cache_arr,ADCT_MAX_CACHE_SIZE)){

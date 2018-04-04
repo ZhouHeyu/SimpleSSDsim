@@ -40,7 +40,7 @@ void InitGlobalVariable()
 //   初始化HDA算法相关的参数
     HDA_Th1=0.5;
     HDA_Th2=0.5;
-    HASH_SIZE=cache_size;
+    HASH_SIZE=cache_size*10;
     Range_K=50;
 }
 
@@ -225,7 +225,7 @@ void SSDsim_setup_SSDsim(int argc,char ** argv)
             fprintf(outputfile,"Hot_threshold one is %lf\n",HDA_Th1);
             fprintf(outputfile,"Hot_threshold second is %lf\n",HDA_Th2);
             fprintf(outputfile,"HASH_SIZE is %d\n",HASH_SIZE);
-            fprintf(outputfile,'RangK is %d\n"',Range_K);
+            fprintf(outputfile,"RangK is %d\n",Range_K);
             break;
     }
     fprintf(outputfile,"=================================================\n");
