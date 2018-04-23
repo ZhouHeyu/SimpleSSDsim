@@ -45,6 +45,7 @@ int cycle_physical_read;
 int ADCT_FW;
 int ADCT_BW;
 int last_flash_write;
+int ADCT_t;
 
 double cycle_flash_read_delay;
 double cycle_flash_write_delay;

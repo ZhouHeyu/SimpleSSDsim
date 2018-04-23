@@ -255,10 +255,11 @@ double HotDateAware_AddCacheEntry(int LPN ,int operation)
             HotDataAware_Cache_Num_Entry++;
             Update_Hash(LPN, 1);
         }
-        else
+        else {
             physical_write++;
-            delay+=callFsim(LPN*4,4,0);
-            Update_Hash(LPN,0);
+            delay += callFsim(LPN * 4, 4, 0);
+            Update_Hash(LPN, 0);
+        }
     }else{
         buffer_read_miss++;
         cache_read_num++;

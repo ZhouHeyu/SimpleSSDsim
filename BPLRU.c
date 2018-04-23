@@ -40,6 +40,7 @@ void BPLRU_end()
 int BPLRU_Search(int LPN,int operation)
 {
     int Hit_Flag=-1;
+//------------------------------------------------------------------
     int tempBlk;
     tempBlk=LPN/PAGE_NUM_PER_BLK;
 //  针对第一次请求的处理
@@ -64,7 +65,7 @@ int BPLRU_Search(int LPN,int operation)
         Seq_flag=0;
     }
 
-
+//－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
     FindHitBlkNode(BPLRU_Head,LPN,&Hit_Flag);
 
     return Hit_Flag;

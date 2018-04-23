@@ -517,6 +517,8 @@ void DelLPNInCLRU()
 }
 
 
+
+
 //删除DLRU中的数据项，聚簇回写，涉及底层的物理读写，返回操作时延
 double DelLPNInDLRU()
 {
@@ -622,7 +624,7 @@ double DelLPNInDLRU()
     }else{
         if(ADCT_FW!=0){F=(double)ADCT_FW/1;}
     }
-    double Th=(double)PAGE_NUM_PER_BLK/(1+pow(2,2-F));
+    double Th=(double)PAGE_NUM_PER_BLK/(1+pow(ADCT_t,2-F));
 
 //    printf("Th is %lf\n",Th);
 
@@ -632,11 +634,19 @@ double DelLPNInDLRU()
         delay=ClusterWriteToFlash(tempBlkNum,0);
     }
 
+//    删除全部的脏页进行回写
+//    delay=ClusterWriteToFlash(tempBlkNum,1);
+
+
+
     /****************计算回写的时间延迟***0:不启用页填充*********************************/
 //    delay=ClusterWriteToFlash(tempBlkNum,0);
     //注意更改NandPage的状态（回写后的）
     //更改对应的块索引
     MoveDLRUToCLRU(tempBlkNum,KeepCluser,KeepSize,VictimCluster,VictimSize);
+
+
+
 
     return delay;
 }
@@ -705,6 +715,7 @@ int ADCT_init(int size, int DataBlk_Num)
     ADCT_FW=0;
     ADCT_BW=0;
     last_flash_write=flash_write_num;
+    ADCT_t=2;
     return 0;
 }
 
