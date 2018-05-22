@@ -234,9 +234,10 @@ double BPLRU_DelCacheEntry(int ReqLPN,int Reqoperation)
 
     }else{
 //     不启用页填充机制
-        for (int j = 0; j <DelSize ; ++j) {
+        int j;
+        for ( j = 0; j <DelSize ; ++j) {
             int curr_LPN=pVictim->list[j];
-            delay+=callFsim((curr_LPN*4,4,1);
+            delay+=callFsim(curr_LPN*4,4,1);
         }
         physical_write+=DelSize;
 
